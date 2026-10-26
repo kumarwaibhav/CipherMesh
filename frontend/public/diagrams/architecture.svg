@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="1972" height="976" viewBox="0 0 1972 976" font-size="13" fill="#141414">
+<title>CipherMesh — System Architecture</title>
+<desc>Four-tier left-to-right architecture: clients, FastAPI gateway, LangGraph agent core with CipherMesh engine, and LLM providers beyond the organisational trust boundary.</desc>
+<defs>
+<style type="text/css"><![CDATA[
+  .sans { font-family: Inter, Segoe UI, Helvetica, Arial, sans-serif; }
+  .mono { font-family: JetBrains Mono, SFMono-Regular, Menlo, Consolas, DejaVu Sans Mono, monospace; }
+]]></style>
+<filter id="shadow" x="-10%" y="-10%" width="120%" height="130%"><feGaussianBlur in="SourceAlpha" stdDeviation="1.5"/><feOffset dx="0" dy="1" result="b"/><feComponentTransfer><feFuncA type="linear" slope="0.10"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<marker id="ah-ink" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0.6 L10,5 L0,9.4 Z" fill="#141414"/></marker>
+<marker id="ah-muted" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0.6 L10,5 L0,9.4 Z" fill="#6b6b6b"/></marker>
+<marker id="ah-brand" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0.6 L10,5 L0,9.4 Z" fill="#d7191f"/></marker>
+<marker id="ah-allow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0.6 L10,5 L0,9.4 Z" fill="#16a34a"/></marker>
+<marker id="ah-redact" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0.6 L10,5 L0,9.4 Z" fill="#d97706"/></marker>
+<marker id="ah-review" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0.6 L10,5 L0,9.4 Z" fill="#0284c7"/></marker>
+<marker id="ah-block" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0.6 L10,5 L0,9.4 Z" fill="#dc2626"/></marker>
+</defs>
+<rect x="0" y="0" width="1972" height="976" fill="#ffffff"/>
+<text class="sans" x="40" y="52" font-size="22" font-weight="700">CipherMesh — System Architecture</text>
+<text class="sans" x="40" y="78" font-size="14" fill="#6b6b6b">Every prompt is inspected, sealed and routed inside the trust boundary; only ALLOW or REDACT-sanitised text ever reaches a provider.</text>
+<text class="sans" x="40" y="128" font-weight="700" fill="#6b6b6b" letter-spacing="1">1 · CLIENTS</text>
+<text class="sans" x="352" y="128" font-weight="700" fill="#6b6b6b" letter-spacing="1">2 · API GATEWAY</text>
+<text class="sans" x="816" y="128" font-weight="700" fill="#6b6b6b" letter-spacing="1">3 · AGENT CORE</text>
+<text class="sans" x="1684" y="128" font-weight="700" fill="#6b6b6b" letter-spacing="1">4 · LLM PROVIDERS</text>
+<!-- Tier 3 - LangGraph orchestrator -->
+<g class="box">
+<rect x="816" y="148" width="780" height="292" rx="10" fill="#ffffff" stroke="#d7191f" stroke-width="1.5" filter="url(#shadow)"/>
+<text class="sans" x="836" y="180" font-size="15"><tspan font-weight="700" fill="#d7191f">LangGraph </tspan><tspan font-weight="600" fill="#d7191f" font-family="JetBrains Mono, SFMono-Regular, Menlo, Consolas, DejaVu Sans Mono, monospace">orchestrator_graph</tspan></text>
+</g>
+<g class="box">
+<rect x="840" y="204" width="212" height="60" rx="10" fill="#ffffff" stroke="#141414" stroke-width="1.5"/>
+<text class="mono" x="946" y="229" font-weight="600" text-anchor="middle">privacy_inspection</text>
+<text class="sans" x="946" y="249" fill="#6b6b6b" text-anchor="middle">Detector · Policy</text>
+</g>
+<g class="box">
+<rect x="1100" y="204" width="212" height="60" rx="10" fill="#ffffff" stroke="#141414" stroke-width="1.5"/>
+<text class="mono" x="1206" y="229" font-weight="600" text-anchor="middle">vault_isolation</text>
+<text class="sans" x="1206" y="249" fill="#6b6b6b" text-anchor="middle">VaultSecurity</text>
+</g>
+<g class="box">
+<rect x="1360" y="204" width="212" height="60" rx="10" fill="#ffffff" stroke="#141414" stroke-width="1.5"/>
+<text class="mono" x="1466" y="229" font-weight="600" text-anchor="middle">router</text>
+<text class="sans" x="1466" y="249" fill="#6b6b6b" text-anchor="middle">branches on decision</text>
+</g>
+<g class="box">
+<rect x="840" y="356" width="212" height="60" rx="10" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5"/>
+<text class="mono" x="946" y="381" font-weight="600" text-anchor="middle">block_terminal</text>
+<text class="sans" x="946" y="401" fill="#6b6b6b" text-anchor="middle">refuse · advise revoke/rotate</text>
+</g>
+<g class="box">
+<rect x="1100" y="356" width="212" height="60" rx="10" fill="#f0f9ff" stroke="#0284c7" stroke-width="1.5"/>
+<text class="mono" x="1206" y="381" font-weight="600" text-anchor="middle">review_hold</text>
+<text class="sans" x="1206" y="401" fill="#6b6b6b" text-anchor="middle">Review queue</text>
+</g>
+<g class="box">
+<rect x="1360" y="356" width="212" height="60" rx="10" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+<text class="mono" x="1466" y="381" font-weight="600" text-anchor="middle">provider_dispatch</text>
+<text class="sans" x="1466" y="401" fill="#6b6b6b" text-anchor="middle">procure · route · call</text>
+</g>
+<path d="M1052,234 L1100,234" fill="none" stroke="#141414" stroke-width="1.5" marker-end="url(#ah-ink)" stroke-linejoin="round"/>
+<path d="M1312,234 L1360,234" fill="none" stroke="#141414" stroke-width="1.5" marker-end="url(#ah-ink)" stroke-linejoin="round"/>
+<path d="M1402,264 V294 H946 V356" fill="none" stroke="#dc2626" stroke-width="1.5" marker-end="url(#ah-block)" stroke-linejoin="round"/>
+<path d="M1434,264 V324 H1206 V356" fill="none" stroke="#0284c7" stroke-width="1.5" marker-end="url(#ah-review)" stroke-linejoin="round"/>
+<path d="M1466,264 L1466,356" fill="none" stroke="#16a34a" stroke-width="1.5" marker-end="url(#ah-allow)" stroke-linejoin="round"/>
+<text class="sans" x="1076" y="287" font-weight="700" fill="#dc2626" text-anchor="middle">BLOCK</text>
+<text class="sans" x="1320" y="317" font-weight="700" fill="#0284c7" text-anchor="middle">REVIEW</text>
+<text class="sans" x="1476" y="304" font-weight="700" fill="#16a34a">ALLOW</text>
+<text class="sans" x="1476" y="322" font-weight="700" fill="#d97706">REDACT</text>
+<path d="M1206,440 L1206,488" fill="none" stroke="#6b6b6b" stroke-width="1.5" marker-end="url(#ah-muted)" stroke-linejoin="round"/>
+<text class="sans" x="1216" y="469" fill="#6b6b6b">nodes call</text>
+<!-- Tier 3 - CipherMesh engine v1 -->
+<g class="box">
+<rect x="816" y="488" width="780" height="312" rx="10" fill="#ffffff" stroke="#d7191f" stroke-width="1.5" filter="url(#shadow)"/>
+<text class="sans" x="836" y="520" font-size="15"><tspan font-weight="700" fill="#d7191f">CipherMesh engine </tspan><tspan font-weight="600" fill="#d7191f" font-family="JetBrains Mono, SFMono-Regular, Menlo, Consolas, DejaVu Sans Mono, monospace">v1</tspan></text>
+</g>
+<g class="box">
+<rect x="840" y="540" width="354" height="84" rx="10" fill="#fafafa" stroke="#e5e5e5" stroke-width="1.5"/>
+<text class="sans" x="856" y="568" font-weight="600">Detector</text>
+<text class="sans" x="856" y="588" fill="#6b6b6b">25 rules · Luhn/Verhoeff checksums ·</text>
+<text class="sans" x="856" y="606" fill="#6b6b6b">de-obfuscation</text>
+</g>
+<g class="box">
+<rect x="1218" y="540" width="354" height="84" rx="10" fill="#fafafa" stroke="#e5e5e5" stroke-width="1.5"/>
+<text class="sans" x="1234" y="577" font-weight="600">Policy</text>
+<text class="sans" x="1234" y="597" fill="#6b6b6b"><tspan>R1–R5 (</tspan><tspan font-weight="700" fill="#dc2626">BLOCK</tspan><tspan> &gt; </tspan><tspan font-weight="700" fill="#0284c7">REVIEW</tspan><tspan> &gt; </tspan><tspan font-weight="700" fill="#d97706">REDACT</tspan><tspan> &gt; </tspan><tspan font-weight="700" fill="#16a34a">ALLOW</tspan><tspan>)</tspan></text>
+</g>
+<g class="box">
+<rect x="840" y="636" width="354" height="64" rx="10" fill="#fafafa" stroke="#e5e5e5" stroke-width="1.5"/>
+<text class="sans" x="856" y="663" font-weight="600">Review queue</text>
+<text class="sans" x="856" y="683" fill="#6b6b6b">memory-only, TTL, local-only release</text>
+</g>
+<g class="box">
+<rect x="1218" y="636" width="354" height="64" rx="10" fill="#fafafa" stroke="#e5e5e5" stroke-width="1.5"/>
+<text class="sans" x="1234" y="673" font-weight="600">Response-side inspection</text>
+</g>
+<g class="box">
+<rect x="840" y="712" width="354" height="64" rx="10" fill="#fafafa" stroke="#e5e5e5" stroke-width="1.5"/>
+<text class="sans" x="856" y="749" font-weight="600">Contract-Net procurement</text>
+</g>
+<g class="box">
+<rect x="1218" y="712" width="354" height="64" rx="10" fill="#fafafa" stroke="#e5e5e5" stroke-width="1.5"/>
+<text class="sans" x="1234" y="739" font-weight="600">Utility router</text>
+<text class="sans" x="1234" y="759" fill="#6b6b6b">residency · budget · SLO · circuit breaker</text>
+</g>
+<g class="box">
+<rect x="816" y="820" width="500" height="92" rx="10" fill="#ffffff" stroke="#d7191f" stroke-width="1.5" filter="url(#shadow)"/>
+<text class="sans" x="836" y="848" font-size="15" font-weight="700" fill="#d7191f">VaultSecurity</text>
+<text class="mono" x="836" y="872">PBKDF2-HMAC-SHA256 ×600k → Fernet</text>
+<text class="mono" x="836" y="892" fill="#6b6b6b">(AES-128-CBC + HMAC-SHA256), MultiFernet rotation</text>
+</g>
+<g class="box">
+<rect x="1340" y="820" width="256" height="92" rx="10" fill="#ffffff" stroke="#d7191f" stroke-width="1.5" filter="url(#shadow)"/>
+<text class="sans" x="1360" y="848" font-size="15" font-weight="700" fill="#d7191f">Audit log</text>
+<text class="sans" x="1360" y="872" fill="#6b6b6b">SQLite, metadata only</text>
+</g>
+<!-- Tier 2 - FastAPI gateway -->
+<g class="box">
+<rect x="352" y="148" width="392" height="366" rx="10" fill="#ffffff" stroke="#141414" stroke-width="1.5" filter="url(#shadow)"/>
+<text class="sans" x="372" y="180" font-size="15"><tspan font-weight="700">FastAPI</tspan><tspan fill="#6b6b6b">  API gateway</tspan></text>
+</g>
+<g class="box">
+<rect x="372" y="200" width="352" height="128" rx="10" fill="#fafafa" stroke="#e5e5e5" stroke-width="1.5"/>
+<text class="mono" x="388" y="226" font-weight="600">POST /api/v1/inspect</text>
+<text class="mono" x="388" y="250">GET  /api/v1/reviews ·</text>
+<text class="mono" x="388" y="270">POST /reviews/{id}/decision</text>
+<text class="mono" x="388" y="294" fill="#6b6b6b">GET  /health · /metrics ·</text>
+<text class="mono" x="388" y="314" fill="#6b6b6b" xml:space="preserve">     /providers · /graph</text>
+</g>
+<text class="sans" x="372" y="362" font-weight="700" fill="#6b6b6b" letter-spacing="1">GUARD STRIP</text>
+<g class="box">
+<rect x="372" y="374" width="170" height="32" rx="16" fill="#ffffff" stroke="#e5e5e5" stroke-width="1.5"/>
+<text class="sans" x="457" y="395" text-anchor="middle">CORS (no credentials)</text>
+</g>
+<g class="box">
+<rect x="554" y="374" width="170" height="32" rx="16" fill="#ffffff" stroke="#e5e5e5" stroke-width="1.5"/>
+<text class="sans" x="639" y="395" text-anchor="middle">rate limit</text>
+</g>
+<g class="box">
+<rect x="372" y="416" width="170" height="32" rx="16" fill="#ffffff" stroke="#e5e5e5" stroke-width="1.5"/>
+<text class="sans" x="457" y="437" text-anchor="middle">body-size limit</text>
+</g>
+<g class="box">
+<rect x="554" y="416" width="170" height="32" rx="16" fill="#ffffff" stroke="#e5e5e5" stroke-width="1.5"/>
+<text class="sans" x="639" y="437" text-anchor="middle">optional API token</text>
+</g>
+<g class="box">
+<rect x="372" y="458" width="170" height="32" rx="16" fill="#ffffff" stroke="#e5e5e5" stroke-width="1.5"/>
+<text class="sans" x="457" y="479" text-anchor="middle">security headers</text>
+</g>
+<g class="box">
+<rect x="554" y="458" width="170" height="32" rx="16" fill="#ffffff" stroke="#e5e5e5" stroke-width="1.5"/>
+<text class="sans" x="639" y="479" text-anchor="middle">request IDs</text>
+</g>
+<path d="M744,234 L816,234" fill="none" stroke="#141414" stroke-width="1.5" marker-end="url(#ah-ink)" stroke-linejoin="round"/>
+<text class="mono" x="780" y="226" fill="#6b6b6b" text-anchor="middle">invoke</text>
+<g class="box">
+<rect x="40" y="200" width="240" height="76" rx="10" fill="#ffffff" stroke="#141414" stroke-width="1.5" filter="url(#shadow)"/>
+<text class="sans" x="58" y="230" font-size="15" font-weight="700">Next.js 14 Console</text>
+<text class="sans" x="58" y="254" fill="#6b6b6b">App Router · Tailwind</text>
+</g>
+<g class="box">
+<rect x="40" y="304" width="240" height="76" rx="10" fill="#ffffff" stroke="#141414" stroke-width="1.5" filter="url(#shadow)"/>
+<text class="sans" x="58" y="334" font-size="15" font-weight="700">Any app / SDK</text>
+<text class="sans" x="58" y="358" fill="#6b6b6b">REST</text>
+</g>
+<path d="M280,238 L352,238" fill="none" stroke="#141414" stroke-width="1.5" marker-end="url(#ah-ink)" stroke-linejoin="round"/>
+<path d="M280,342 L352,342" fill="none" stroke="#141414" stroke-width="1.5" marker-end="url(#ah-ink)" stroke-linejoin="round"/>
+<text class="sans" x="316" y="230" fill="#6b6b6b" text-anchor="middle">HTTPS</text>
+<text class="sans" x="316" y="334" fill="#6b6b6b" text-anchor="middle">HTTPS</text>
+<g class="box">
+<rect x="1684" y="234" width="248" height="64" rx="10" fill="#ffffff" stroke="#141414" stroke-width="1.5" filter="url(#shadow)"/>
+<text class="sans" x="1702" y="261" font-size="15" font-weight="700">AWS Bedrock</text>
+<text class="mono" x="1702" y="282" fill="#6b6b6b">ap-south-1 (IN)</text>
+</g>
+<g class="box">
+<rect x="1684" y="314" width="248" height="64" rx="10" fill="#ffffff" stroke="#141414" stroke-width="1.5" filter="url(#shadow)"/>
+<text class="sans" x="1702" y="341" font-size="15" font-weight="700">Azure AI Foundry</text>
+<text class="mono" x="1702" y="362" fill="#6b6b6b">centralindia (IN)</text>
+</g>
+<g class="box">
+<rect x="1684" y="394" width="248" height="64" rx="10" fill="#ffffff" stroke="#141414" stroke-width="1.5" filter="url(#shadow)"/>
+<text class="sans" x="1702" y="421" font-size="15" font-weight="700">GCP Vertex AI</text>
+<text class="mono" x="1702" y="442" fill="#6b6b6b">us-central1 (US)</text>
+</g>
+<g class="box">
+<rect x="1684" y="474" width="248" height="64" rx="10" fill="#ffffff" stroke="#141414" stroke-width="1.5" filter="url(#shadow)"/>
+<text class="sans" x="1702" y="501" font-size="15" font-weight="700">Ollama local</text>
+<text class="mono" x="1702" y="522" fill="#6b6b6b">on-host</text>
+</g>
+<path d="M1572,386 L1660,386" fill="none" stroke="#16a34a" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M1660,266 L1660,506" fill="none" stroke="#16a34a" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M1660,266 L1684,266" fill="none" stroke="#16a34a" stroke-width="1.5" marker-end="url(#ah-allow)" stroke-linejoin="round"/>
+<path d="M1660,346 L1684,346" fill="none" stroke="#16a34a" stroke-width="1.5" marker-end="url(#ah-allow)" stroke-linejoin="round"/>
+<path d="M1660,426 L1684,426" fill="none" stroke="#16a34a" stroke-width="1.5" marker-end="url(#ah-allow)" stroke-linejoin="round"/>
+<path d="M1660,506 L1684,506" fill="none" stroke="#16a34a" stroke-width="1.5" marker-end="url(#ah-allow)" stroke-linejoin="round"/>
+<circle cx="1660" cy="386" r="3.5" fill="#16a34a"/>
+<path d="M1636,112 L1636,912" fill="none" stroke="#d7191f" stroke-width="2" stroke-dasharray="8 6" stroke-linejoin="round"/>
+<g class="box">
+<rect x="1656" y="578" width="276" height="84" rx="10" fill="#fff5f5" stroke="#d7191f" stroke-width="1.5" stroke-dasharray="6 4"/>
+<text class="sans" x="1674" y="606" font-weight="700" fill="#d7191f">Organisational trust boundary</text>
+<text class="sans" x="1674" y="628">— only ALLOW / REDACT-sanitised</text>
+<text class="sans" x="1674" y="648">text crosses</text>
+</g>
+<path d="M1656,601 H1638" fill="none" stroke="#d7191f" stroke-width="1.5" marker-end="url(#ah-brand)" stroke-linejoin="round"/>
+<g class="box">
+<rect x="40" y="676" width="704" height="236" rx="10" fill="#ffffff" stroke="#e5e5e5" stroke-width="1.5"/>
+<text class="sans" x="60" y="706" font-weight="700" fill="#6b6b6b" letter-spacing="1">LEGEND</text>
+</g>
+<path d="M60,740 L92,740" fill="none" stroke="#16a34a" stroke-width="1.5" marker-end="url(#ah-allow)" stroke-linejoin="round"/>
+<text class="sans" x="104" y="745" xml:space="preserve"><tspan font-weight="700" fill="#16a34a">ALLOW</tspan><tspan fill="#6b6b6b">  forwarded unchanged</tspan></text>
+<path d="M60,770 L92,770" fill="none" stroke="#d97706" stroke-width="1.5" marker-end="url(#ah-redact)" stroke-linejoin="round"/>
+<text class="sans" x="104" y="775" xml:space="preserve"><tspan font-weight="700" fill="#d97706">REDACT</tspan><tspan fill="#6b6b6b">  forwarded after sanitisation</tspan></text>
+<path d="M60,800 L92,800" fill="none" stroke="#0284c7" stroke-width="1.5" marker-end="url(#ah-review)" stroke-linejoin="round"/>
+<text class="sans" x="104" y="805" xml:space="preserve"><tspan font-weight="700" fill="#0284c7">REVIEW</tspan><tspan fill="#6b6b6b">  held for a human; nothing sent</tspan></text>
+<path d="M60,830 L92,830" fill="none" stroke="#dc2626" stroke-width="1.5" marker-end="url(#ah-block)" stroke-linejoin="round"/>
+<text class="sans" x="104" y="835" xml:space="preserve"><tspan font-weight="700" fill="#dc2626">BLOCK</tspan><tspan fill="#6b6b6b">  refused; nothing sent</tspan></text>
+<rect x="412" y="730" width="32" height="20" rx="5" fill="#ffffff" stroke="#d7191f" stroke-width="1.5"/>
+<text class="sans" x="456" y="745">CipherMesh core component</text>
+<path d="M412,770 L444,770" fill="none" stroke="#d7191f" stroke-width="2" stroke-dasharray="8 6" stroke-linejoin="round"/>
+<text class="sans" x="456" y="775">Trust boundary</text>
+<path d="M412,800 L444,800" fill="none" stroke="#141414" stroke-width="1.5" marker-end="url(#ah-ink)" stroke-linejoin="round"/>
+<text class="sans" x="456" y="805">Request flow</text>
+<path d="M412,830 L444,830" fill="none" stroke="#6b6b6b" stroke-width="1.5" marker-end="url(#ah-muted)" stroke-linejoin="round"/>
+<text class="sans" x="456" y="835">Internal call</text>
+<text class="sans" x="60" y="886" fill="#6b6b6b">Decision precedence: BLOCK &gt; REVIEW &gt; REDACT &gt; ALLOW</text>
+<text class="sans" x="40" y="952" fill="#6b6b6b">CipherMesh v2.0 · Kumar Waibhav Akshat</text>
+</svg>

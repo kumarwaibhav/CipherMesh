@@ -1,0 +1,19 @@
+services:
+  backend:
+    build: ./backend
+    env_file: ./backend/.env.example
+    environment:
+      CIPHERMESH_VAULT_SEED: ${CIPHERMESH_VAULT_SEED:-local-compose-demo-seed-change-me-0123456789}
+    ports: ["127.0.0.1:8000:8000"]
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        NEXT_PUBLIC_API_BASE_URL: http://127.0.0.1:8000
+    ports: ["127.0.0.1:3000:3000"]
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped

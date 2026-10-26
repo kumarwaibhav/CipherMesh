@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="1600" height="990" viewBox="0 0 1600 990" font-size="13" fill="#141414">
+<title>LangGraph state machine</title>
+<desc>CipherMesh orchestrator_graph: START, privacy_inspection, vault_isolation, execution_router with three conditional branches to block_terminal, review_hold and provider_dispatch, all converging on END; plus the AgentState schema.</desc>
+<defs>
+<style type="text/css"><![CDATA[
+  .sans { font-family: Inter, Segoe UI, Helvetica, Arial, sans-serif; }
+  .mono { font-family: JetBrains Mono, SFMono-Regular, Menlo, Consolas, DejaVu Sans Mono, monospace; }
+]]></style>
+<filter id="shadow" x="-10%" y="-10%" width="120%" height="130%"><feGaussianBlur in="SourceAlpha" stdDeviation="1.5"/><feOffset dx="0" dy="1" result="b"/><feComponentTransfer><feFuncA type="linear" slope="0.10"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<marker id="ah-ink" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0.6 L10,5 L0,9.4 Z" fill="#141414"/></marker>
+<marker id="ah-muted" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0.6 L10,5 L0,9.4 Z" fill="#6b6b6b"/></marker>
+<marker id="ah-brand" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0.6 L10,5 L0,9.4 Z" fill="#d7191f"/></marker>
+<marker id="ah-allow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0.6 L10,5 L0,9.4 Z" fill="#16a34a"/></marker>
+<marker id="ah-redact" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0.6 L10,5 L0,9.4 Z" fill="#d97706"/></marker>
+<marker id="ah-review" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0.6 L10,5 L0,9.4 Z" fill="#0284c7"/></marker>
+<marker id="ah-block" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0.6 L10,5 L0,9.4 Z" fill="#dc2626"/></marker>
+</defs>
+<rect x="0" y="0" width="1600" height="990" fill="#ffffff"/>
+<text class="sans" x="40" y="52" font-size="22" font-weight="700">LangGraph state machine</text>
+<text class="sans" x="40" y="78" font-size="14" fill="#6b6b6b">orchestrator_graph — every request walks the same path; the router decides which single terminal node runs.</text>
+<g class="box">
+<rect x="460" y="132" width="120" height="40" rx="20" fill="#141414" stroke="#141414" stroke-width="1.5"/>
+<text class="mono" x="520" y="158" font-weight="700" fill="#ffffff" text-anchor="middle">START</text>
+</g>
+<g class="box">
+<rect x="200" y="220" width="640" height="72" rx="10" fill="#ffffff" stroke="#141414" stroke-width="1.5" filter="url(#shadow)"/>
+<text class="mono" x="520" y="250" font-size="15" font-weight="600" text-anchor="middle">privacy_inspection</text>
+<text class="sans" x="520" y="273" fill="#6b6b6b" text-anchor="middle">regex + checksum + normalisation · decides ALLOW / REDACT / REVIEW / BLOCK</text>
+</g>
+<path d="M520,172 L520,220" fill="none" stroke="#141414" stroke-width="1.5" marker-end="url(#ah-ink)" stroke-linejoin="round"/>
+<g class="box">
+<rect x="200" y="340" width="640" height="72" rx="10" fill="#ffffff" stroke="#141414" stroke-width="1.5" filter="url(#shadow)"/>
+<text class="mono" x="520" y="370" font-size="15" font-weight="600" text-anchor="middle">vault_isolation</text>
+<text class="sans" x="520" y="393" fill="#6b6b6b" text-anchor="middle">seal findings + execution details · verify round-trip</text>
+</g>
+<path d="M520,292 L520,340" fill="none" stroke="#141414" stroke-width="1.5" marker-end="url(#ah-ink)" stroke-linejoin="round"/>
+<path d="M520,412 L520,460" fill="none" stroke="#141414" stroke-width="1.5" marker-end="url(#ah-ink)" stroke-linejoin="round"/>
+<g class="diamond">
+<polygon points="520,460 660.0,520.0 520,580 380.0,520.0" fill="#ffffff" stroke="#141414" stroke-width="1.5" filter="url(#shadow)"/>
+</g>
+<text class="mono" x="520" y="518" font-weight="600" text-anchor="middle">execution_router</text>
+<text class="sans" x="520" y="538" fill="#6b6b6b" text-anchor="middle">conditional edge</text>
+<g class="box">
+<rect x="60" y="684" width="280" height="72" rx="10" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5" filter="url(#shadow)"/>
+<text class="mono" x="200" y="714" font-size="15" font-weight="600" text-anchor="middle">block_terminal</text>
+<text class="sans" x="200" y="737" fill="#6b6b6b" text-anchor="middle">refuse · advise revoke/rotate</text>
+</g>
+<g class="box">
+<rect x="380" y="684" width="280" height="72" rx="10" fill="#f0f9ff" stroke="#0284c7" stroke-width="1.5" filter="url(#shadow)"/>
+<text class="mono" x="520" y="714" font-size="15" font-weight="600" text-anchor="middle">review_hold</text>
+<text class="sans" x="520" y="737" fill="#6b6b6b" text-anchor="middle">queue ticket · nothing sent</text>
+</g>
+<g class="box">
+<rect x="700" y="684" width="280" height="92" rx="10" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5" filter="url(#shadow)"/>
+<text class="mono" x="840" y="714" font-size="15" font-weight="600" text-anchor="middle">provider_dispatch</text>
+</g>
+<text class="sans" x="840" y="737" fill="#6b6b6b" text-anchor="middle">procure → route → call →</text>
+<text class="sans" x="840" y="757" fill="#6b6b6b" text-anchor="middle">fallback → inspect response</text>
+<path d="M380.0,520.0 H200 V684" fill="none" stroke="#dc2626" stroke-width="1.5" marker-end="url(#ah-block)" stroke-linejoin="round"/>
+<path d="M520,580 L520,684" fill="none" stroke="#0284c7" stroke-width="1.5" marker-end="url(#ah-review)" stroke-linejoin="round"/>
+<path d="M660.0,520.0 H840 V684" fill="none" stroke="#16a34a" stroke-width="1.5" marker-end="url(#ah-allow)" stroke-linejoin="round"/>
+<g class="box">
+<rect x="151.3" y="589" width="97.4" height="26" rx="13" fill="#ffffff" stroke="#dc2626" stroke-width="1.2"/>
+<text class="mono" x="200" y="607" font-weight="600" fill="#dc2626" text-anchor="middle">block_end</text>
+</g>
+<g class="box">
+<rect x="467" y="619" width="106" height="26" rx="13" fill="#ffffff" stroke="#0284c7" stroke-width="1.2"/>
+<text class="mono" x="520" y="637" font-weight="600" fill="#0284c7" text-anchor="middle">review_end</text>
+</g>
+<g class="box">
+<rect x="782.7" y="589" width="114.6" height="26" rx="13" fill="#ffffff" stroke="#16a34a" stroke-width="1.2"/>
+<text class="mono" x="840" y="607" font-weight="600" fill="#16a34a" text-anchor="middle">execute_end</text>
+</g>
+<text class="sans" x="854" y="636" font-weight="600" fill="#6b6b6b" font-style="italic">ALLOW or REDACT</text>
+<g class="box">
+<rect x="460" y="848" width="120" height="40" rx="20" fill="#141414" stroke="#141414" stroke-width="1.5"/>
+<text class="mono" x="520" y="874" font-weight="700" fill="#ffffff" text-anchor="middle">END</text>
+</g>
+<path d="M520,756 L520,848" fill="none" stroke="#141414" stroke-width="1.5" marker-end="url(#ah-ink)" stroke-linejoin="round"/>
+<path d="M200,756 V868 H460" fill="none" stroke="#141414" stroke-width="1.5" marker-end="url(#ah-ink)" stroke-linejoin="round"/>
+<path d="M840,776 V868 H580" fill="none" stroke="#141414" stroke-width="1.5" marker-end="url(#ah-ink)" stroke-linejoin="round"/>
+<g class="box">
+<rect x="1080" y="132" width="480" height="620" rx="10" fill="#ffffff" stroke="#141414" stroke-width="1.5" filter="url(#shadow)"/>
+<text class="sans" x="1104" y="168" font-size="15" xml:space="preserve"><tspan font-weight="700" font-family="JetBrains Mono, SFMono-Regular, Menlo, Consolas, DejaVu Sans Mono, monospace">AgentState</tspan><tspan fill="#6b6b6b">  (TypedDict)</tspan></text>
+</g>
+<path d="M1080,188 L1560,188" fill="none" stroke="#e5e5e5" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="1081" y="196" width="478" height="30" rx="0" fill="#fafafa" stroke="none"/>
+<text class="mono" x="1104" y="216">request_id</text>
+<text class="mono" x="1104" y="246">raw_prompt</text>
+<circle cx="1530" cy="241.0" r="5" fill="#d7191f"/>
+<rect x="1081" y="256" width="478" height="30" rx="0" fill="#fafafa" stroke="none"/>
+<text class="mono" x="1104" y="276">target_provider</text>
+<text class="mono" x="1104" y="306">action_decision</text>
+<rect x="1081" y="316" width="478" height="30" rx="0" fill="#fafafa" stroke="none"/>
+<text class="mono" x="1104" y="336">processed_prompt</text>
+<text class="mono" x="1104" y="366">safe_preview</text>
+<rect x="1081" y="376" width="478" height="30" rx="0" fill="#fafafa" stroke="none"/>
+<text class="mono" x="1104" y="396">reasons</text>
+<text class="mono" x="1104" y="426">findings</text>
+<rect x="1081" y="436" width="478" height="30" rx="0" fill="#fafafa" stroke="none"/>
+<text class="mono" x="1104" y="456">inspection</text>
+<text class="mono" x="1104" y="486">logs</text>
+<rect x="1409.6" y="470" width="126.4" height="22" rx="11" fill="#ffffff" stroke="#e5e5e5" stroke-width="1"/>
+<text class="sans" x="1472.8" y="485" fill="#6b6b6b" text-anchor="middle">append reducer</text>
+<rect x="1081" y="496" width="478" height="30" rx="0" fill="#fafafa" stroke="none"/>
+<text class="mono" x="1104" y="516">graph_path</text>
+<rect x="1409.6" y="500" width="126.4" height="22" rx="11" fill="#ffffff" stroke="#e5e5e5" stroke-width="1"/>
+<text class="sans" x="1472.8" y="515" fill="#6b6b6b" text-anchor="middle">append reducer</text>
+<text class="mono" x="1104" y="546">vault_token</text>
+<rect x="1081" y="556" width="478" height="30" rx="0" fill="#fafafa" stroke="none"/>
+<text class="mono" x="1104" y="576">review_id</text>
+<text class="mono" x="1104" y="606">route</text>
+<rect x="1081" y="616" width="478" height="30" rx="0" fill="#fafafa" stroke="none"/>
+<text class="mono" x="1104" y="636">response</text>
+<text class="mono" x="1104" y="666">routed_provider</text>
+<rect x="1081" y="676" width="478" height="30" rx="0" fill="#fafafa" stroke="none"/>
+<text class="mono" x="1104" y="696">status</text>
+<text class="mono" x="1104" y="726">timings</text>
+<rect x="1417.2" y="710" width="118.8" height="22" rx="11" fill="#ffffff" stroke="#e5e5e5" stroke-width="1"/>
+<text class="sans" x="1476.6" y="725" fill="#6b6b6b" text-anchor="middle">merge reducer</text>
+<g class="box">
+<rect x="1080" y="772" width="480" height="52" rx="10" fill="#fff5f5" stroke="#d7191f" stroke-width="1.5"/>
+<circle cx="1106" cy="798" r="5" fill="#d7191f"/>
+<text class="sans" x="1122" y="803"><tspan font-weight="600" fill="#d7191f" font-family="JetBrains Mono, SFMono-Regular, Menlo, Consolas, DejaVu Sans Mono, monospace">raw_prompt</tspan><tspan fill="#141414"> is cleared once no longer needed</tspan></text>
+</g>
+<text class="sans" x="1080" y="856" font-weight="700" fill="#6b6b6b" letter-spacing="1">LEGEND</text>
+<rect x="1080" y="875" width="22" height="16" rx="4" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5"/>
+<text class="sans" x="1112" y="888" font-weight="600" fill="#dc2626">BLOCK</text>
+<rect x="1320" y="875" width="22" height="16" rx="4" fill="#f0f9ff" stroke="#0284c7" stroke-width="1.5"/>
+<text class="sans" x="1352" y="888" font-weight="600" fill="#0284c7">REVIEW</text>
+<rect x="1080" y="903" width="22" height="16" rx="4" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+<text class="sans" x="1112" y="916" font-weight="600" fill="#16a34a">ALLOW</text>
+<rect x="1320" y="903" width="22" height="16" rx="4" fill="#fffbeb" stroke="#d97706" stroke-width="1.5"/>
+<text class="sans" x="1352" y="916" font-weight="600" fill="#d97706">REDACT</text>
+<text class="mono" x="1188" y="888" fill="#6b6b6b">→ block_end</text>
+<text class="mono" x="1428" y="888" fill="#6b6b6b">→ review_end</text>
+<text class="mono" x="1188" y="916" fill="#6b6b6b">→ execute_end</text>
+<text class="mono" x="1428" y="916" fill="#6b6b6b">→ execute_end</text>
+<text class="sans" x="40" y="966" fill="#6b6b6b">CipherMesh v2.0 · Kumar Waibhav Akshat</text>
+</svg>

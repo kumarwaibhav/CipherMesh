@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="1910" height="1224" viewBox="0 0 1910 1224" font-size="13" fill="#141414">
+<title>Request lifecycle (REDACT example)</title>
+<desc>UML sequence diagram of one REDACT request flowing through Console, FastAPI, LangGraph, Detector/Policy, Vault, Router+Procurement and AWS Bedrock.</desc>
+<defs>
+<style type="text/css"><![CDATA[
+  .sans { font-family: Inter, Segoe UI, Helvetica, Arial, sans-serif; }
+  .mono { font-family: JetBrains Mono, SFMono-Regular, Menlo, Consolas, DejaVu Sans Mono, monospace; }
+]]></style>
+<filter id="shadow" x="-10%" y="-10%" width="120%" height="130%"><feGaussianBlur in="SourceAlpha" stdDeviation="1.5"/><feOffset dx="0" dy="1" result="b"/><feComponentTransfer><feFuncA type="linear" slope="0.10"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<marker id="ah-ink" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0.6 L10,5 L0,9.4 Z" fill="#141414"/></marker>
+<marker id="ah-muted" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0.6 L10,5 L0,9.4 Z" fill="#6b6b6b"/></marker>
+<marker id="ah-brand" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0.6 L10,5 L0,9.4 Z" fill="#d7191f"/></marker>
+<marker id="ah-allow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0.6 L10,5 L0,9.4 Z" fill="#16a34a"/></marker>
+<marker id="ah-redact" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0.6 L10,5 L0,9.4 Z" fill="#d97706"/></marker>
+<marker id="ah-review" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0.6 L10,5 L0,9.4 Z" fill="#0284c7"/></marker>
+<marker id="ah-block" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0.6 L10,5 L0,9.4 Z" fill="#dc2626"/></marker>
+</defs>
+<rect x="0" y="0" width="1910" height="1224" fill="#ffffff"/>
+<text class="sans" x="40" y="52" font-size="22" font-weight="700">Request lifecycle (REDACT example)</text>
+<text class="sans" x="40" y="78" font-size="14" fill="#6b6b6b">One prompt containing an email and an Aadhaar number: inspected, sealed, routed in-region, sanitised before it leaves.</text>
+<path d="M130,180 L130,1044" fill="none" stroke="#c8c8c8" stroke-width="1.2" stroke-dasharray="4 5" stroke-linejoin="round"/>
+<g class="box">
+<rect x="30" y="120" width="200" height="60" rx="10" fill="#ffffff" stroke="#141414" stroke-width="1.5" filter="url(#shadow)"/>
+<text class="sans" x="130" y="146" font-size="15" font-weight="700" text-anchor="middle">Console</text>
+<text class="sans" x="130" y="166" fill="#6b6b6b" text-anchor="middle">Next.js 14</text>
+</g>
+<g class="box">
+<rect x="30" y="1044" width="200" height="60" rx="10" fill="#ffffff" stroke="#141414" stroke-width="1.5" filter="url(#shadow)"/>
+<text class="sans" x="130" y="1070" font-size="15" font-weight="700" text-anchor="middle">Console</text>
+<text class="sans" x="130" y="1090" fill="#6b6b6b" text-anchor="middle">Next.js 14</text>
+</g>
+<path d="M560,180 L560,1044" fill="none" stroke="#c8c8c8" stroke-width="1.2" stroke-dasharray="4 5" stroke-linejoin="round"/>
+<g class="box">
+<rect x="460" y="120" width="200" height="60" rx="10" fill="#ffffff" stroke="#141414" stroke-width="1.5" filter="url(#shadow)"/>
+<text class="sans" x="560" y="146" font-size="15" font-weight="700" text-anchor="middle">FastAPI</text>
+<text class="sans" x="560" y="166" fill="#6b6b6b" text-anchor="middle">API gateway</text>
+</g>
+<g class="box">
+<rect x="460" y="1044" width="200" height="60" rx="10" fill="#ffffff" stroke="#141414" stroke-width="1.5" filter="url(#shadow)"/>
+<text class="sans" x="560" y="1070" font-size="15" font-weight="700" text-anchor="middle">FastAPI</text>
+<text class="sans" x="560" y="1090" fill="#6b6b6b" text-anchor="middle">API gateway</text>
+</g>
+<path d="M796,180 L796,1044" fill="none" stroke="#c8c8c8" stroke-width="1.2" stroke-dasharray="4 5" stroke-linejoin="round"/>
+<g class="box">
+<rect x="696" y="120" width="200" height="60" rx="10" fill="#fff5f5" stroke="#d7191f" stroke-width="1.5" filter="url(#shadow)"/>
+<text class="sans" x="796" y="146" font-size="15" font-weight="700" text-anchor="middle">LangGraph</text>
+<text class="mono" x="796" y="166" fill="#6b6b6b" text-anchor="middle">orchestrator_graph</text>
+</g>
+<g class="box">
+<rect x="696" y="1044" width="200" height="60" rx="10" fill="#fff5f5" stroke="#d7191f" stroke-width="1.5" filter="url(#shadow)"/>
+<text class="sans" x="796" y="1070" font-size="15" font-weight="700" text-anchor="middle">LangGraph</text>
+<text class="mono" x="796" y="1090" fill="#6b6b6b" text-anchor="middle">orchestrator_graph</text>
+</g>
+<path d="M1032,180 L1032,1044" fill="none" stroke="#c8c8c8" stroke-width="1.2" stroke-dasharray="4 5" stroke-linejoin="round"/>
+<g class="box">
+<rect x="932" y="120" width="200" height="60" rx="10" fill="#fff5f5" stroke="#d7191f" stroke-width="1.5" filter="url(#shadow)"/>
+<text class="sans" x="1032" y="146" font-size="15" font-weight="700" text-anchor="middle">Detector/Policy</text>
+<text class="sans" x="1032" y="166" fill="#6b6b6b" text-anchor="middle">engine v1</text>
+</g>
+<g class="box">
+<rect x="932" y="1044" width="200" height="60" rx="10" fill="#fff5f5" stroke="#d7191f" stroke-width="1.5" filter="url(#shadow)"/>
+<text class="sans" x="1032" y="1070" font-size="15" font-weight="700" text-anchor="middle">Detector/Policy</text>
+<text class="sans" x="1032" y="1090" fill="#6b6b6b" text-anchor="middle">engine v1</text>
+</g>
+<path d="M1268,180 L1268,1044" fill="none" stroke="#c8c8c8" stroke-width="1.2" stroke-dasharray="4 5" stroke-linejoin="round"/>
+<g class="box">
+<rect x="1168" y="120" width="200" height="60" rx="10" fill="#fff5f5" stroke="#d7191f" stroke-width="1.5" filter="url(#shadow)"/>
+<text class="sans" x="1268" y="146" font-size="15" font-weight="700" text-anchor="middle">Vault</text>
+<text class="sans" x="1268" y="166" fill="#6b6b6b" text-anchor="middle">VaultSecurity</text>
+</g>
+<g class="box">
+<rect x="1168" y="1044" width="200" height="60" rx="10" fill="#fff5f5" stroke="#d7191f" stroke-width="1.5" filter="url(#shadow)"/>
+<text class="sans" x="1268" y="1070" font-size="15" font-weight="700" text-anchor="middle">Vault</text>
+<text class="sans" x="1268" y="1090" fill="#6b6b6b" text-anchor="middle">VaultSecurity</text>
+</g>
+<path d="M1504,180 L1504,1044" fill="none" stroke="#c8c8c8" stroke-width="1.2" stroke-dasharray="4 5" stroke-linejoin="round"/>
+<g class="box">
+<rect x="1404" y="120" width="200" height="60" rx="10" fill="#fff5f5" stroke="#d7191f" stroke-width="1.5" filter="url(#shadow)"/>
+<text class="sans" x="1504" y="146" font-size="15" font-weight="700" text-anchor="middle">Router+Procurement</text>
+<text class="sans" x="1504" y="166" fill="#6b6b6b" text-anchor="middle">utility · Contract-Net</text>
+</g>
+<g class="box">
+<rect x="1404" y="1044" width="200" height="60" rx="10" fill="#fff5f5" stroke="#d7191f" stroke-width="1.5" filter="url(#shadow)"/>
+<text class="sans" x="1504" y="1070" font-size="15" font-weight="700" text-anchor="middle">Router+Procurement</text>
+<text class="sans" x="1504" y="1090" fill="#6b6b6b" text-anchor="middle">utility · Contract-Net</text>
+</g>
+<path d="M1740,180 L1740,1044" fill="none" stroke="#c8c8c8" stroke-width="1.2" stroke-dasharray="4 5" stroke-linejoin="round"/>
+<g class="box">
+<rect x="1640" y="120" width="200" height="60" rx="10" fill="#ffffff" stroke="#141414" stroke-width="1.5" filter="url(#shadow)"/>
+<text class="sans" x="1740" y="146" font-size="15" font-weight="700" text-anchor="middle">Provider</text>
+<text class="sans" x="1740" y="166" fill="#6b6b6b" text-anchor="middle">AWS Bedrock</text>
+</g>
+<g class="box">
+<rect x="1640" y="1044" width="200" height="60" rx="10" fill="#ffffff" stroke="#141414" stroke-width="1.5" filter="url(#shadow)"/>
+<text class="sans" x="1740" y="1070" font-size="15" font-weight="700" text-anchor="middle">Provider</text>
+<text class="sans" x="1740" y="1090" fill="#6b6b6b" text-anchor="middle">AWS Bedrock</text>
+</g>
+<rect x="554" y="226" width="12" height="764" rx="2" fill="#ffffff" stroke="#141414" stroke-width="1.2"/>
+<rect x="790" y="282" width="12" height="652" rx="2" fill="#fff5f5" stroke="#d7191f" stroke-width="1.2"/>
+<rect x="1026" y="340" width="12" height="72" rx="2" fill="#fff5f5" stroke="#d7191f" stroke-width="1.2"/>
+<rect x="1262" y="452" width="12" height="72" rx="2" fill="#fff5f5" stroke="#d7191f" stroke-width="1.2"/>
+<rect x="1498" y="564" width="12" height="72" rx="2" fill="#fff5f5" stroke="#d7191f" stroke-width="1.2"/>
+<rect x="1734" y="720" width="12" height="72" rx="2" fill="#ffffff" stroke="#141414" stroke-width="1.2"/>
+<path d="M40,678 L1870,678" fill="none" stroke="#d7191f" stroke-width="1.5" stroke-dasharray="8 6" stroke-linejoin="round"/>
+<g class="box">
+<rect x="1472" y="662" width="300" height="32" rx="16" fill="#fff5f5" stroke="#d7191f" stroke-width="1.5"/>
+<text class="sans" x="1622" y="683" font-weight="700" fill="#d7191f" text-anchor="middle">Raw text never crosses this line</text>
+</g>
+<path d="M130,236 L554,236" fill="none" stroke="#141414" stroke-width="1.5" marker-end="url(#ah-ink)" stroke-linejoin="round"/>
+<rect x="142.45" y="205" width="399.1" height="26" rx="4" fill="#ffffff" stroke="none"/>
+<circle cx="157.45" cy="218" r="11" fill="#141414"/>
+<text class="sans" x="157.45" y="223" font-weight="700" fill="#ffffff" text-anchor="middle">1</text>
+<text class="mono" x="176.45" y="223">POST /api/v1/inspect {prompt, target_provider}</text>
+<path d="M566,292 L790,292" fill="none" stroke="#141414" stroke-width="1.5" marker-end="url(#ah-ink)" stroke-linejoin="round"/>
+<rect x="576.58" y="261" width="202.85" height="26" rx="4" fill="#ffffff" stroke="none"/>
+<circle cx="591.58" cy="274" r="11" fill="#141414"/>
+<text class="sans" x="591.58" y="279" font-weight="700" fill="#ffffff" text-anchor="middle">2</text>
+<text class="mono" x="610.58" y="279">invoke(initial_state)</text>
+<path d="M802,348 L1026,348" fill="none" stroke="#141414" stroke-width="1.5" marker-end="url(#ah-ink)" stroke-linejoin="round"/>
+<rect x="820.42" y="317" width="187.15" height="26" rx="4" fill="#ffffff" stroke="none"/>
+<circle cx="835.42" cy="330" r="11" fill="#141414"/>
+<text class="sans" x="835.42" y="335" font-weight="700" fill="#ffffff" text-anchor="middle">3</text>
+<text class="mono" x="854.42" y="335">inspect(raw_prompt)</text>
+<path d="M1026,404 L802,404" fill="none" stroke="#141414" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#ah-ink)" stroke-linejoin="round"/>
+<rect x="804.73" y="373" width="218.55" height="26" rx="4" fill="#ffffff" stroke="none"/>
+<circle cx="819.73" cy="386" r="11" fill="#141414"/>
+<text class="sans" x="819.73" y="391" font-weight="700" fill="#ffffff" text-anchor="middle">4</text>
+<text class="sans" x="838.73" y="391"><tspan font-weight="700" fill="#d97706" font-family="JetBrains Mono, SFMono-Regular, Menlo, Consolas, DejaVu Sans Mono, monospace">REDACT</tspan><tspan fill="#6b6b6b" font-family="JetBrains Mono, SFMono-Regular, Menlo, Consolas, DejaVu Sans Mono, monospace"> · email, aadhaar</tspan></text>
+<path d="M802,460 L1262,460" fill="none" stroke="#141414" stroke-width="1.5" marker-end="url(#ah-ink)" stroke-linejoin="round"/>
+<rect x="899.17" y="429" width="265.65" height="26" rx="4" fill="#ffffff" stroke="none"/>
+<circle cx="914.17" cy="442" r="11" fill="#141414"/>
+<text class="sans" x="914.17" y="447" font-weight="700" fill="#ffffff" text-anchor="middle">5</text>
+<text class="mono" x="933.17" y="447">seal_state(findings, details)</text>
+<path d="M1262,516 L802,516" fill="none" stroke="#141414" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#ah-ink)" stroke-linejoin="round"/>
+<rect x="922.73" y="485" width="218.55" height="26" rx="4" fill="#ffffff" stroke="none"/>
+<circle cx="937.73" cy="498" r="11" fill="#141414"/>
+<text class="sans" x="937.73" y="503" font-weight="700" fill="#ffffff" text-anchor="middle">6</text>
+<text class="mono" x="956.73" y="503" fill="#6b6b6b">Fernet token (verified)</text>
+<path d="M802,572 L1498,572" fill="none" stroke="#141414" stroke-width="1.5" marker-end="url(#ah-ink)" stroke-linejoin="round"/>
+<rect x="981.85" y="541" width="336.3" height="26" rx="4" fill="#ffffff" stroke="none"/>
+<circle cx="996.85" cy="554" r="11" fill="#141414"/>
+<text class="sans" x="996.85" y="559" font-weight="700" fill="#ffffff" text-anchor="middle">7</text>
+<text class="mono" x="1015.85" y="559">route(constraints: IN/LOCAL residency)</text>
+<path d="M1498,628 L802,628" fill="none" stroke="#141414" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#ah-ink)" stroke-linejoin="round"/>
+<rect x="1009.33" y="597" width="281.35" height="26" rx="4" fill="#ffffff" stroke="none"/>
+<circle cx="1024.33" cy="610" r="11" fill="#141414"/>
+<text class="sans" x="1024.33" y="615" font-weight="700" fill="#ffffff" text-anchor="middle">8</text>
+<text class="mono" x="1043.33" y="615" fill="#6b6b6b">aws-bedrock · contract $2.28/1k</text>
+<path d="M802,728 L1734,728" fill="none" stroke="#16a34a" stroke-width="1.5" marker-end="url(#ah-allow)" stroke-linejoin="round"/>
+<rect x="1166.58" y="697" width="202.85" height="26" rx="4" fill="#ffffff" stroke="none"/>
+<circle cx="1181.58" cy="710" r="11" fill="#d7191f"/>
+<text class="sans" x="1181.58" y="715" font-weight="700" fill="#ffffff" text-anchor="middle">9</text>
+<text class="mono" x="1200.58" y="715" font-weight="600" fill="#16a34a">sanitised prompt only</text>
+<path d="M1734,784 L802,784" fill="none" stroke="#141414" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#ah-ink)" stroke-linejoin="round"/>
+<rect x="1217.6" y="753" width="100.8" height="26" rx="4" fill="#ffffff" stroke="none"/>
+<circle cx="1232.6" cy="766" r="11" fill="#141414"/>
+<text class="sans" x="1232.6" y="771" font-weight="700" fill="#ffffff" text-anchor="middle">10</text>
+<text class="mono" x="1251.6" y="771" fill="#6b6b6b">response</text>
+<path d="M802,840 H846 V868 H802" fill="none" stroke="#141414" stroke-width="1.5" marker-end="url(#ah-ink)" stroke-linejoin="round"/>
+<circle cx="860" cy="849" r="11" fill="#141414"/>
+<text class="sans" x="860" y="854" font-weight="700" fill="#ffffff" text-anchor="middle">11</text>
+<text class="mono" x="878" y="854">inspect response</text>
+<path d="M790,924 L566,924" fill="none" stroke="#141414" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#ah-ink)" stroke-linejoin="round"/>
+<rect x="615.83" y="893" width="124.35" height="26" rx="4" fill="#ffffff" stroke="none"/>
+<circle cx="630.83" cy="906" r="11" fill="#141414"/>
+<text class="sans" x="630.83" y="911" font-weight="700" fill="#ffffff" text-anchor="middle">12</text>
+<text class="mono" x="649.83" y="911" fill="#6b6b6b">final state</text>
+<path d="M554,980 L130,980" fill="none" stroke="#141414" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#ah-ink)" stroke-linejoin="round"/>
+<rect x="181.7" y="949" width="320.6" height="26" rx="4" fill="#ffffff" stroke="none"/>
+<circle cx="196.7" cy="962" r="11" fill="#141414"/>
+<text class="sans" x="196.7" y="967" font-weight="700" fill="#ffffff" text-anchor="middle">13</text>
+<text class="mono" x="215.7" y="967" fill="#6b6b6b">decision · telemetry · route · vault</text>
+<text class="sans" x="40" y="1157" font-weight="700" fill="#6b6b6b" letter-spacing="1">LEGEND</text>
+<path d="M124,1152 L164,1152" fill="none" stroke="#141414" stroke-width="1.5" marker-end="url(#ah-ink)" stroke-linejoin="round"/>
+<text class="sans" x="176" y="1157">call</text>
+<path d="M238,1152 L278,1152" fill="none" stroke="#141414" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#ah-ink)" stroke-linejoin="round"/>
+<text class="sans" x="290" y="1157">return</text>
+<path d="M370,1152 L410,1152" fill="none" stroke="#16a34a" stroke-width="1.5" marker-end="url(#ah-allow)" stroke-linejoin="round"/>
+<text class="sans" x="422" y="1157">sanitised (ALLOW / REDACT) egress</text>
+<rect x="690" y="1143" width="14" height="18" rx="2" fill="#fff5f5" stroke="#d7191f" stroke-width="1.2"/>
+<text class="sans" x="716" y="1157">CipherMesh activation</text>
+<text class="sans" x="898" y="1157"><tspan font-weight="700" fill="#d97706">REDACT</tspan><tspan fill="#6b6b6b"> decision in this example</tspan></text>
+<text class="sans" x="40" y="1200" fill="#6b6b6b">CipherMesh v2.0 · Kumar Waibhav Akshat</text>
+</svg>
