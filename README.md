@@ -16,7 +16,7 @@
 ![Tailwind](https://img.shields.io/badge/Tailwind-3.4-06B6D4?logo=tailwindcss&logoColor=white)
 ![Tests](https://img.shields.io/badge/tests-161%20passing-16a34a)
 
-<img src="docs/screenshots/console_overview.png" alt="CipherMesh console showing a REDACT decision" width="900">
+<img src="docs/screenshots/redact.png" alt="CipherMesh console showing a REDACT decision" width="900">
 
 </div>
 
@@ -133,21 +133,71 @@ This example follows a prompt containing an **email** and an **Aadhaar number**:
 
 ## 📸 Screenshots
 
-| REDACT: personal data masked | BLOCK: credential refused |
-|:--:|:--:|
-| <img src="docs/screenshots/console_redact.png" width="440"> | <img src="docs/screenshots/console_block.png" width="440"> |
-| **REVIEW: approved by a human, local model only** | **Mobile (390 px)** |
-| <img src="docs/screenshots/console_review_approved.png" width="440"> | <img src="docs/screenshots/console_mobile.png" width="200"> |
+All screenshots come from the live console at [ciphermesh-console.vercel.app](https://ciphermesh-console.vercel.app).
 
-What each part of the console shows:
+### The four decisions
 
-- **Decision card**: the colour-coded outcome and the reason (rule R1–R5).
-- **What the provider sees**: the exact text that left the boundary.
-- **Findings**: each detected item with its rule, severity, position and confidence.
-- **Utility routing**: every provider's score, price, and why some were excluded.
-- **Terminal panel**: a live trace of every LangGraph step with timings.
-- **Review queue**: held prompts with Approve / Deny buttons (needs the reviewer token).
-- **Vault isolation**: the encryption details of the sealed evidence.
+<table>
+  <tr>
+    <td width="50%" align="center"><b>🟢 ALLOW</b>: clean prompt forwarded unchanged</td>
+    <td width="50%" align="center"><b>🟠 REDACT</b>: email and Aadhaar masked before sending</td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/allow.png" alt="ALLOW decision" width="100%"></td>
+    <td><img src="docs/screenshots/redact.png" alt="REDACT decision" width="100%"></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><b>🔵 REVIEW</b>: internal URL held for a human</td>
+    <td width="50%" align="center"><b>🔴 BLOCK</b>: API key detected, nothing sent</td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/review_pending.png" alt="REVIEW decision" width="100%"></td>
+    <td><img src="docs/screenshots/block.png" alt="BLOCK decision" width="100%"></td>
+  </tr>
+</table>
+
+### Human review and routing
+
+<table>
+  <tr>
+    <td width="50%" align="center"><b>Review queue</b>: approve or deny with the reviewer token</td>
+    <td width="50%" align="center"><b>After approval</b>: released to the local model only</td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/review_queue.png" alt="Review queue" width="100%"></td>
+    <td><img src="docs/screenshots/review_approved.png" alt="Approved review" width="100%"></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><b>Utility routing</b>: provider scores, negotiated prices, residency rule</td>
+    <td width="50%" align="center"><b>Architecture page</b>: diagrams and the live LangGraph definition</td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/routing.png" alt="Utility routing table" width="100%"></td>
+    <td><img src="docs/screenshots/architecture_page.png" alt="Architecture page" width="100%"></td>
+  </tr>
+</table>
+
+### Mobile (390 px)
+
+<p align="center">
+  <img src="docs/screenshots/mobile_1.png" alt="Mobile: metrics and prompt form" width="230">
+  &nbsp;
+  <img src="docs/screenshots/mobile_2.png" alt="Mobile: decision card" width="230">
+  &nbsp;
+  <img src="docs/screenshots/mobile_3.png" alt="Mobile: telemetry terminal" width="230">
+</p>
+
+### What each panel shows
+
+| Panel | What you see |
+|:--|:--|
+| **Decision card** | The colour-coded outcome, its status and the policy rule that fired (R1–R5) |
+| **What the provider sees** | The exact text that left the trust boundary, or "Nothing transmitted" |
+| **Findings** | Each detected item with its rule, severity, position and confidence |
+| **Utility routing** | Every provider's score and negotiated price, and why any were excluded |
+| **Terminal** | A live trace of every LangGraph step with timings |
+| **Review queue** | Held prompts with Approve / Deny (needs the reviewer token) |
+| **Vault isolation** | Encryption details of the sealed evidence |
 
 ---
 
