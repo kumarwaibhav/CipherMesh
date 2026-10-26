@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /*
- * CipherMesh design tokens.
+ * CipherMesh design tokens (legacy scales: used by the trace terminal and code blocks).
  *
  * Every Tailwind colour the console uses (zinc, emerald, amber, sky, red, brand) resolves to a
  * CSS variable holding an "r g b" triplet. Light mode is the default on :root; `.dark` on <html>
@@ -155,7 +155,70 @@
   --shadow-raised: 0 1px 0 0 rgb(255 255 255 / 0.04) inset, 0 16px 40px -16px rgb(0 0 0 / 0.6);
 }
 
-/* `clip` (not `hidden`) stops sideways scroll without breaking the sticky header. */
+/*
+ * Semantic tokens for the glass interface (Apple Human Interface colours).
+ * label = primary text, label-2 = secondary, label-3 = tertiary. `tint` is the action colour.
+ * Each decision has a vivid `fill` (icons, dots) and an accessible `text` shade that meets
+ * WCAG AA 4.5:1 on the glass surfaces of its own theme.
+ */
+:root {
+  --bg: 242 242 247;
+  --label: 29 29 31;
+  --label-2: 72 72 77;
+  --label-3: 99 99 105;
+  --tint: 0 104 214;
+  --tint-hover: 0 91 191;
+  --tint-text: 0 88 176;
+
+  --allow: 52 199 89;
+  --allow-text: 23 106 46;
+  --redact: 255 149 0;
+  --redact-text: 154 67 0;
+  --review: 88 86 214;
+  --review-text: 75 72 196;
+  --block: 255 59 48;
+  --block-text: 176 16 26;
+
+  --glass: 255 255 255;
+  --glass-a: 0.66;
+  --glass-strong-a: 0.84;
+  --glass-border: rgb(255 255 255 / 0.75);
+  --glass-edge: rgb(0 0 0 / 0.06);
+  --hairline: rgb(0 0 0 / 0.08);
+  --well: rgb(118 118 128 / 0.1);
+  --glass-shadow: 0 1px 1px rgb(0 0 0 / 0.04), 0 10px 30px -10px rgb(31 38 135 / 0.18);
+  --glass-highlight: inset 0 1px 0 rgb(255 255 255 / 0.85);
+}
+
+:root.dark {
+  --bg: 0 0 0;
+  --label: 245 245 247;
+  --label-2: 199 199 204;
+  --label-3: 162 162 168;
+  --tint: 0 104 214;
+  --tint-hover: 0 91 191;
+  --tint-text: 100 170 255;
+
+  --allow: 48 209 88;
+  --allow-text: 48 209 88;
+  --redact: 255 159 10;
+  --redact-text: 255 179 64;
+  --review: 94 92 230;
+  --review-text: 165 163 255;
+  --block: 255 69 58;
+  --block-text: 255 120 112;
+
+  --glass: 30 30 34;
+  --glass-a: 0.58;
+  --glass-strong-a: 0.74;
+  --glass-border: rgb(255 255 255 / 0.12);
+  --glass-edge: rgb(0 0 0 / 0.4);
+  --hairline: rgb(255 255 255 / 0.1);
+  --well: rgb(118 118 128 / 0.24);
+  --glass-shadow: 0 1px 1px rgb(0 0 0 / 0.3), 0 16px 40px -12px rgb(0 0 0 / 0.6);
+  --glass-highlight: inset 0 1px 0 rgb(255 255 255 / 0.08);
+}
+
 html,
 body {
   max-width: 100%;
@@ -163,11 +226,116 @@ body {
 }
 
 body {
-  @apply bg-zinc-950 text-zinc-100 antialiased;
-  font-feature-settings: "ss01", "ss02";
+  background-color: rgb(var(--bg));
+  color: rgb(var(--label));
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Theme switches recolour instantly instead of animating every border and background. */
+/* ---------- Wallpaper: soft colour fields the glass refracts ---------- */
+.wallpaper {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: rgb(var(--bg));
+  background-image:
+    radial-gradient(42rem 34rem at 8% 6%, rgb(120 170 255 / 0.55), transparent 62%),
+    radial-gradient(38rem 30rem at 92% 12%, rgb(196 160 255 / 0.5), transparent 60%),
+    radial-gradient(44rem 36rem at 78% 92%, rgb(255 190 160 / 0.45), transparent 62%),
+    radial-gradient(36rem 30rem at 12% 88%, rgb(140 225 205 / 0.42), transparent 60%);
+}
+:root.dark .wallpaper {
+  background-image:
+    radial-gradient(42rem 34rem at 8% 6%, rgb(40 90 220 / 0.5), transparent 62%),
+    radial-gradient(38rem 30rem at 92% 12%, rgb(120 60 210 / 0.45), transparent 60%),
+    radial-gradient(48rem 30rem at 50% 48%, rgb(50 70 170 / 0.22), transparent 65%),
+    radial-gradient(44rem 36rem at 78% 92%, rgb(200 60 90 / 0.3), transparent 62%),
+    radial-gradient(36rem 30rem at 12% 88%, rgb(20 140 130 / 0.36), transparent 60%);
+}
+
+/* Components layer, so Tailwind utilities (e.g. border colours) can override the glass defaults. */
+@layer components {
+/* ---------- Glass materials (iOS: ultra-thin, regular, thick) ---------- */
+.glass,
+.glass-strong,
+.glass-thin {
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-highlight), var(--glass-shadow);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  backdrop-filter: blur(28px) saturate(180%);
+}
+.glass {
+  background-color: rgb(var(--glass) / var(--glass-a));
+}
+.glass-strong {
+  background-color: rgb(var(--glass) / var(--glass-strong-a));
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  backdrop-filter: blur(40px) saturate(200%);
+}
+.glass-thin {
+  background-color: rgb(var(--glass) / 0.4);
+  box-shadow: var(--glass-highlight);
+}
+/* Without backdrop blur, fall back to near-opaque surfaces so text stays readable. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass,
+  .glass-thin {
+    background-color: rgb(var(--glass) / 0.94);
+  }
+  .glass-strong {
+    background-color: rgb(var(--glass) / 0.98);
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .glass,
+  .glass-thin,
+  .glass-strong {
+    background-color: rgb(var(--glass) / 0.97);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* Inset fields (inputs, text wells) */
+.well {
+  background-color: var(--well);
+}
+.hairline {
+  border-color: var(--hairline);
+}
+
+}
+
+/* Native <dialog> as an iOS sheet */
+dialog.sheet {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  max-width: min(560px, calc(100vw - 24px));
+  width: 100%;
+}
+dialog.sheet::backdrop {
+  background: rgb(0 0 0 / 0.32);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+dialog.sheet[open] {
+  animation: sheet-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Theme switches recolour instantly instead of animating every surface. */
 .theme-switching *,
 .theme-switching *::before,
 .theme-switching *::after {
@@ -175,18 +343,19 @@ body {
 }
 
 ::selection {
-  background: rgb(var(--brand) / 0.28);
+  background: rgb(var(--tint) / 0.25);
 }
 
 .scrollbar-thin {
   scrollbar-width: thin;
-  scrollbar-color: rgb(var(--zinc-700)) transparent;
+  scrollbar-color: rgb(var(--label-3) / 0.5) transparent;
 }
 
-/* Faint mesh grid behind the page header. */
-.mesh-grid {
-  background-image: radial-gradient(rgb(var(--zinc-500) / 0.18) 1px, transparent 1.2px);
-  background-size: 24px 24px;
+/* Highlight of a detected value inside the user's own text */
+mark.finding {
+  border-radius: 6px;
+  padding: 0 3px;
+  color: inherit;
 }
 
 @media (prefers-reduced-motion: reduce) {

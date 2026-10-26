@@ -8,9 +8,8 @@
 
 **Protect every prompt. Across every model. Before data leaves.**
 
-[![Live Console](https://img.shields.io/badge/Live-Console-E5202A?style=for-the-badge)](https://ciphermesh-console.vercel.app)
+[![Open the app](https://img.shields.io/badge/Open-the%20app-0068D6?style=for-the-badge)](https://ciphermesh-console.vercel.app)
 [![Live API](https://img.shields.io/badge/Live-API-0B0C0E?style=for-the-badge)](https://ciphermesh-api.vercel.app/docs)
-[![Brand](https://img.shields.io/badge/Brand-Guidelines-2A2E35?style=for-the-badge)](https://ciphermesh-console.vercel.app/brand)
 
 ![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.162-009688?logo=fastapi&logoColor=white)
@@ -22,12 +21,12 @@
 
 <table>
   <tr>
-    <td width="50%" align="center"><b>Dark</b></td>
     <td width="50%" align="center"><b>Light</b></td>
+    <td width="50%" align="center"><b>Dark</b></td>
   </tr>
   <tr>
-    <td><img src="docs/screenshots/console_dark.png" alt="CipherMesh console in dark mode" width="100%"></td>
-    <td><img src="docs/screenshots/console_light.png" alt="CipherMesh console in light mode" width="100%"></td>
+    <td><img src="docs/screenshots/home_light.png" alt="CipherMesh home screen in light mode" width="100%"></td>
+    <td><img src="docs/screenshots/home_dark.png" alt="CipherMesh home screen in dark mode" width="100%"></td>
   </tr>
 </table>
 
@@ -42,18 +41,17 @@
 3. [Architecture](#-architecture)
 4. [How a request flows](#-how-a-request-flows)
 5. [Screenshots](#-screenshots)
-6. [Brand](#-brand)
-7. [Tech stack](#-tech-stack)
-8. [Project structure](#-project-structure)
-9. [Run it on your machine](#-run-it-on-your-machine)
-10. [Try it](#-try-it)
-11. [API reference](#-api-reference)
-12. [Configuration](#-configuration)
-13. [Security design](#-security-design)
-14. [Testing](#-testing)
-15. [Deployment](#-deployment)
-16. [Limitations](#-limitations)
-17. [Author](#-author)
+6. [Tech stack](#-tech-stack)
+7. [Project structure](#-project-structure)
+8. [Run it on your machine](#-run-it-on-your-machine)
+9. [Try it](#-try-it)
+10. [API reference](#-api-reference)
+11. [Configuration](#-configuration)
+12. [Security design](#-security-design)
+13. [Testing](#-testing)
+14. [Deployment](#-deployment)
+15. [Limitations](#-limitations)
+16. [Author](#-author)
 
 ---
 
@@ -87,11 +85,13 @@ The decision engine is an **AI agent built with LangGraph**. It runs a fixed set
 | Decision | Colour | When it happens | What the provider receives | Example prompt |
 |:--|:--:|:--|:--|:--|
 | **ALLOW** | 🟢 Green | Nothing sensitive found | The prompt, unchanged | `Explain transformers in two lines` |
-| **REDACT** | 🟠 Amber | Personal data found (email, phone, Aadhaar, PAN, card, IP) | A masked copy, e.g. `Email [REDACTED:EMAIL]` | `Email jane.doe@example.com a summary` |
-| **REVIEW** | 🔵 Blue | Internal or corporate URL found | **Nothing yet.** A human must approve; approved text goes to the **local** model only | `See https://wiki.corp/runbook` |
+| **REDACT** | 🟠 Orange | Personal data found (email, phone, Aadhaar, PAN, card, IP) | A masked copy, e.g. `Email [REDACTED:EMAIL]` | `Email jane.doe@example.com a summary` |
+| **REVIEW** | 🟣 Purple | Internal or corporate URL found | **Nothing yet.** A human must approve; approved text goes to the **local** model only | `See https://wiki.corp/runbook` |
 | **BLOCK** | 🔴 Red | A secret or credential found | **Nothing.** The user is told to rotate the key | `aws_access_key_id = AKIA…` |
 
 When several rules match, the strictest one wins: **BLOCK > REVIEW > REDACT > ALLOW**.
+
+In the app the four results are shown in plain words: **Safe**, **Cleaned**, **Waiting** and **Blocked**.
 
 ---
 
@@ -103,7 +103,7 @@ The system has four layers, read from left to right:
 
 | # | Layer | What it does |
 |:-:|:--|:--|
-| 1 | **Clients** | The Next.js console, or any app calling the REST API. |
+| 1 | **Clients** | The CipherMesh web app, or any app calling the REST API. |
 | 2 | **API gateway** (FastAPI) | Checks every request: size limit, rate limit, tokens, security headers, request IDs. |
 | 3 | **Agent core** (LangGraph + CipherMesh engine) | The agent itself. It detects sensitive data, applies policy, seals evidence in the vault, picks the best provider and inspects the reply. |
 | 4 | **LLM providers** | AWS Bedrock, Azure AI Foundry, GCP Vertex AI and a local Ollama model. They sit **outside** the red trust boundary. |
@@ -135,101 +135,87 @@ The agent's memory is a typed `AgentState` (right side of the diagram). The raw 
 
 This example follows a prompt containing an **email** and an **Aadhaar number**:
 
-1. The console sends the prompt to `POST /api/v1/inspect`.
+1. The web app sends the prompt to `POST /api/v1/inspect`.
 2. FastAPI starts the LangGraph agent.
 3. The detector finds the email and the Aadhaar number, so the decision is **REDACT**.
 4. The vault seals the findings and returns a verified token.
 5. Aadhaar is Indian personal data, so the router only allows **in-India or local** providers. It picks AWS Bedrock (Mumbai) at a negotiated price.
 6. Only the **masked** prompt crosses the red line to the provider.
-7. The reply is inspected too, then the console gets the decision, the trace, the route and the vault details.
+7. The reply is inspected too, then the web app gets the decision, the trace, the route and the vault details.
 
 ---
 
 ## 📸 Screenshots
 
-All screenshots come from the live console at [ciphermesh-console.vercel.app](https://ciphermesh-console.vercel.app).
+The interface is designed so anyone can use it without training. It follows Apple's glass design language (frosted, translucent layers in light and dark mode) and teaches itself the way Google tools do:
 
-### The four decisions
+- **One obvious action.** A single text box and one blue **Check prompt** button. Everything technical is folded away.
+- **Examples to click.** "A normal question", "Email and phone", "An API key"… each one runs instantly, so you learn by trying.
+- **A progress guide** (Paste → Check → See result) that moves as you go, plus a 20-second tour behind the **?** button.
+- **Answers in plain language.** Every result says what happened and what to do next, then shows *your text* next to *what the AI receives*, with each private item highlighted.
+- **Colour that means something** (Apple colour psychology): green = safe, orange = changed, purple = waiting for a person, red = stopped. The word is always shown too, so colour is never the only signal.
 
-<table>
-  <tr>
-    <td width="50%" align="center"><b>🟢 ALLOW</b>: clean prompt forwarded unchanged</td>
-    <td width="50%" align="center"><b>🟠 REDACT</b>: email and Aadhaar masked before sending</td>
-  </tr>
-  <tr>
-    <td><img src="docs/screenshots/allow.png" alt="ALLOW decision" width="100%"></td>
-    <td><img src="docs/screenshots/redact.png" alt="REDACT decision" width="100%"></td>
-  </tr>
-  <tr>
-    <td width="50%" align="center"><b>🔵 REVIEW</b>: internal URL held for a human</td>
-    <td width="50%" align="center"><b>🔴 BLOCK</b>: API key detected, nothing sent</td>
-  </tr>
-  <tr>
-    <td><img src="docs/screenshots/review_pending.png" alt="REVIEW decision" width="100%"></td>
-    <td><img src="docs/screenshots/block.png" alt="BLOCK decision" width="100%"></td>
-  </tr>
-</table>
-
-### Human review and routing
+### The four results
 
 <table>
   <tr>
-    <td width="50%" align="center"><b>Review queue</b>: approve or deny with the reviewer token</td>
-    <td width="50%" align="center"><b>After approval</b>: released to the local model only</td>
+    <td width="50%" align="center"><b>🟢 Safe</b>: nothing private, sent as written</td>
+    <td width="50%" align="center"><b>🟠 Cleaned</b>: Aadhaar and PAN hidden before sending</td>
   </tr>
   <tr>
-    <td><img src="docs/screenshots/review_queue.png" alt="Review queue" width="100%"></td>
-    <td><img src="docs/screenshots/review_approved.png" alt="Approved review" width="100%"></td>
+    <td><img src="docs/screenshots/allow.png" alt="Safe result" width="100%"></td>
+    <td><img src="docs/screenshots/redact.png" alt="Cleaned result" width="100%"></td>
   </tr>
   <tr>
-    <td width="50%" align="center"><b>Utility routing</b>: provider scores, negotiated prices, residency rule</td>
-    <td width="50%" align="center"><b>Architecture page</b>: diagrams and the live LangGraph definition</td>
+    <td width="50%" align="center"><b>🟣 Waiting</b>: an internal link needs a person to approve it</td>
+    <td width="50%" align="center"><b>🔴 Blocked</b>: an API key was found, nothing sent</td>
   </tr>
   <tr>
-    <td><img src="docs/screenshots/routing.png" alt="Utility routing table" width="100%"></td>
-    <td><img src="docs/screenshots/architecture_page.png" alt="Architecture page" width="100%"></td>
+    <td><img src="docs/screenshots/review_pending.png" alt="Waiting for approval result" width="100%"></td>
+    <td><img src="docs/screenshots/block.png" alt="Blocked result" width="100%"></td>
   </tr>
 </table>
 
-### Mobile (390 px)
+### Approvals, details and help
+
+<table>
+  <tr>
+    <td width="50%" align="center"><b>Approvals</b>: approve or deny held prompts</td>
+    <td width="50%" align="center"><b>After approval</b>: sent only to the private local model</td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/approvals.png" alt="Approvals screen" width="100%"></td>
+    <td><img src="docs/screenshots/review_approved.png" alt="Approved result" width="100%"></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><b>Dark mode</b>: a cleaned result</td>
+    <td width="50%" align="center"><b>Technical details</b>: model choice, full log, encryption, rules</td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/redact_dark.png" alt="Cleaned result in dark mode" width="100%"></td>
+    <td><img src="docs/screenshots/details_dark.png" alt="Technical details panel" width="100%"></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><b>Guided tour</b>: three steps, one click to try</td>
+    <td width="50%" align="center"><b>How it works</b>: the whole system in plain words, with diagrams</td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/guided_tour.png" alt="Guided tour sheet" width="100%"></td>
+    <td><img src="docs/screenshots/how_it_works.png" alt="How it works page" width="100%"></td>
+  </tr>
+</table>
+
+### On a phone (390 px)
 
 <p align="center">
-  <img src="docs/screenshots/mobile_1.png" alt="Mobile: metrics and prompt form" width="230">
+  <img src="docs/screenshots/mobile_1.png" alt="Phone: home screen" width="230">
   &nbsp;
-  <img src="docs/screenshots/mobile_2.png" alt="Mobile: REDACT decision in dark mode" width="230">
+  <img src="docs/screenshots/mobile_2.png" alt="Phone: cleaned result" width="230">
   &nbsp;
-  <img src="docs/screenshots/mobile_3.png" alt="Mobile: BLOCK decision in light mode" width="230">
+  <img src="docs/screenshots/mobile_3.png" alt="Phone: blocked result in dark mode" width="230">
 </p>
 
-### What each panel shows
-
-| Panel | What you see |
-|:--|:--|
-| **Decision card** | The colour-coded outcome, its status and the policy rule that fired (R1–R5) |
-| **What the provider sees** | The exact text that left the trust boundary, or "Nothing transmitted" |
-| **Findings** | Each detected item with its rule, severity, position and confidence |
-| **Utility routing** | Every provider's score and negotiated price, and why any were excluded |
-| **Terminal** | A live trace of every LangGraph step with timings |
-| **Review queue** | Held prompts with Approve / Deny (needs the reviewer token) |
-| **Vault isolation** | Encryption details of the sealed evidence |
-
----
-
-## 🎨 Brand
-
-<img src="docs/screenshots/brand_page.png" alt="CipherMesh brand guidelines page" width="100%">
-
-The full guidelines live in the console at **[/brand](https://ciphermesh-console.vercel.app/brand)**.
-
-| Element | Rule |
-|:--|:--|
-| **Mark** | An open hexagon of six mesh nodes (every model) around a red core (the protected prompt), with one red path leaving through the open side (the inspected gate). |
-| **Colour** | Graphite `#0B0C0E`, Carbon `#16181C`, Steel `#2A2E35`, Paper `#F6F5F2`, Signal Red `#E5202A`. Decision colours are used only for ALLOW, REDACT, REVIEW and BLOCK. |
-| **Type** | Space Grotesk for people, JetBrains Mono for machine output (IDs, hashes, traces). |
-| **Themes** | Light, dark and *match system*. The choice is remembered per browser and applied before first paint, so the page never flashes. Every text pairing meets WCAG AA in both themes (checked with axe-core). |
-| **Voice** | The calm guard: precise, calm, plain and accountable. "Nothing was sent. Rotate this key now." |
-
-Logo files (SVG) are in [`docs/brand/`](docs/brand) and served at `/brand/*.svg`. Use `docs/brand/social-preview.png` as the GitHub social preview image.
+On phones the main sections move to an iOS-style tab bar at the bottom of the screen.
 
 ---
 
@@ -241,7 +227,7 @@ Logo files (SVG) are in [`docs/brand/`](docs/brand) and served at `/brand/*.svg`
 | API | **FastAPI** 0.162, Pydantic 2, Uvicorn |
 | Encryption | `cryptography`: PBKDF2-HMAC-SHA256 + Fernet (AES-128-CBC + HMAC-SHA256), MultiFernet key rotation |
 | Detection engine | CipherMesh engine v1: regex + checksums + normalisation, policy R1–R5, Contract-Net negotiation, utility router |
-| Frontend | **Next.js 14** (App Router), React 18, TypeScript (strict), **Tailwind CSS** with CSS-variable design tokens (light + dark), Space Grotesk + JetBrains Mono, lucide icons |
+| Frontend | **Next.js 14** (App Router), React 18, TypeScript (strict), **Tailwind CSS**; glass interface (backdrop blur, light + dark + match-device), Apple system colours, SF Pro / Inter + SF Mono / JetBrains Mono, lucide icons |
 | Testing | pytest (161 tests), ESLint, `tsc`, Playwright end-to-end checks |
 | Delivery | Docker, docker-compose, GitHub Actions CI, Vercel |
 
@@ -269,19 +255,19 @@ cipher_mesh_agent/
 │   ├── api/index.py             ← Vercel entry point
 │   ├── requirements.txt
 │   └── Dockerfile
-├── frontend/                    ← Next.js console
+├── frontend/                    ← Next.js web app
 │   ├── app/
-│   │   ├── page.tsx             ← main console
-│   │   ├── architecture/        ← architecture page
-│   │   ├── brand/               ← brand guidelines page
-│   │   └── components/          ← decision card, terminal, review queue, …
+│   │   ├── page.tsx             ← Check (home)
+│   │   ├── architecture/        ← "How it works" page
+│   │   ├── approvals/           ← approvals screen
+│   │   └── components/          ← app shell, checker, results, approvals, sheets, …
 │   ├── lib/api.ts               ← typed API client
 │   ├── package.json
 │   └── Dockerfile
 ├── docs/
 │   ├── API_CONTRACT.md          ← full API specification
 │   ├── AUDIT.md                 ← independent audit findings and fixes
-│   ├── brand/                   ← logo SVGs, README banners, social preview
+│   ├── brand/                   ← internal brand guidelines, logo SVGs, banners, social preview
 │   ├── diagrams/                ← architecture, LangGraph flow, sequence (SVG + PNG)
 │   └── screenshots/
 ├── docker-compose.yml           ← run everything with one command
@@ -336,15 +322,15 @@ npm ci
 npm run dev
 ```
 
-Open **http://localhost:3000**. The pill at the top right should read **API online**.
+Open **http://localhost:3000**. The dot at the top right should be green and read **Online**.
 
-> 💡 Locally the review queue is open (development mode), so no reviewer token is needed.
+> 💡 Locally the **Approvals** screen is open (development mode), so no reviewer key is needed. In production it asks for the key on the screen itself.
 
 ---
 
 ## 🧪 Try it
 
-In the console, pick a prompt from **Samples** and press **Inspect & Route**. You can also call the API directly:
+Open the app, tap one of the examples (or paste your own text) and press **Check prompt**. You can also call the API directly:
 
 ```bash
 curl -X POST https://ciphermesh-api.vercel.app/api/v1/inspect \

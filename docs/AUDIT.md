@@ -62,17 +62,19 @@ Build gates passed before and after the fixes: `npm ci`, `lint`, `tsc --noEmit` 
 - Frontend: lint, typecheck and production build pass. Playwright smoke at 1440 px and 390 px.
 - Live: every decision path, review approval, auth, chunked 413 with CORS, request-ID sanitisation and the health check were verified against https://ciphermesh-api.vercel.app.
 
-## Brand and theme pass (v2.1)
+## Interface pass (v2.2): glass, guided, accessible
 
 | Check | Tool | Result |
 |:--|:--|:--|
-| Colour contrast, console / architecture / brand pages, dark and light, 1440 px and 390 px | axe-core 4.10 `color-contrast` | 0 violations |
-| Button, link, label and image names | axe-core 4.10 | 0 violations |
-| Horizontal overflow at 390 px | Playwright | 0 px in both themes |
-| Theme applied before first paint (no flash), preference persisted, follows the OS in *system* mode | Playwright + manual | Pass |
-| Trace terminal and code blocks stay dark in light mode (`.force-dark`) | Visual | Pass |
-| Favicon (`/favicon.ico`, `/icon.svg`), Apple touch icon, Open Graph and Twitter images | HTTP 200 + `<head>` tags | Pass |
+| Text contrast measured on the real rendered glass (pixel sampling under every text run), light + dark, 1280 px + 390 px, 11 screens and states | Playwright + custom sampler | 1,979 runs, 0 below WCAG AA |
+| Names, labels, roles, ARIA, landmarks, dialogs | axe-core 4.10 (all rules except contrast, which axe cannot measure through backdrop blur) | 0 violations on every screen, both themes, both widths |
+| Horizontal overflow | Playwright | 0 px everywhere |
+| Full flow: example → result → Approvals → approve → result | Playwright | Pass, no console errors |
+| Theme: light, dark, match device; no flash on load | Playwright | Pass |
+| Reduced transparency and browsers without backdrop blur | CSS fallbacks | Panels become near-opaque |
 | Backend regression | pytest | 161 passed |
 | Frontend | ESLint, `tsc --noEmit`, `next build` | Pass |
 
-Design notes: every Tailwind colour reads a CSS variable, and light mode mirrors each scale, so one class set serves both themes. The wordmark is set at 20 px bold so Signal Red on Graphite (4.25:1) qualifies as large text; small red text uses the lighter `red-300/400` tokens.
+Usability design: one primary action per screen; clickable examples that run instantly; a progress guide; a three-step tour; plain-language results with a next step; "your text vs what the AI receives" side by side; technical detail folded away for engineers; an iOS tab bar on phones; inline sign-in on Approvals instead of a hidden settings page.
+
+The brand guidelines page was removed from the app and kept as an internal document: [`docs/brand/BRAND.md`](brand/BRAND.md).

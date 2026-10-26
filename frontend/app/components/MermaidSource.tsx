@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { GitBranch, Loader2, RefreshCw } from "lucide-react";
 import { api, errorMessage, type GraphResponse } from "@/lib/api";
-import { Card, ErrorBanner, focusRing } from "./ui";
+import { Card, ErrorBanner, buttonSecondary, focusRing } from "./ui";
 
 /** Mermaid labels from LangGraph carry HTML (<p>, &nbsp;). Render them as plain text only. */
 export function mermaidToText(source: string): string {
@@ -51,19 +51,19 @@ export function MermaidSource() {
         <button
           type="button"
           onClick={() => void load()}
-          className={`inline-flex items-center gap-1 rounded-md border border-zinc-700 px-2 py-1 text-xs text-zinc-300 hover:bg-zinc-800 hover:text-zinc-50 ${focusRing}`}
+          className={`${buttonSecondary} ${focusRing}`}
         >
           <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" /> Reload
         </button>
       }
     >
-      <p className="mb-3 text-sm text-zinc-400">
-        Mermaid source served by <code className="font-mono text-zinc-200">GET /api/v1/graph</code>, generated from the
+      <p className="mb-3 text-sm text-label-2">
+        Mermaid source served by <code className="font-mono text-label">GET /api/v1/graph</code>, generated from the
         compiled graph at runtime.
       </p>
       {error ? <ErrorBanner message={error} /> : null}
       {loading && !graph ? (
-        <p className="flex items-center gap-2 text-sm text-zinc-400">
+        <p className="flex items-center gap-2 text-sm text-label-2">
           <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> Loading graph…
         </p>
       ) : null}
@@ -73,11 +73,11 @@ export function MermaidSource() {
             role="region"
             aria-label="Mermaid graph source"
             tabIndex={0}
-            className={`force-dark scrollbar-thin max-h-[480px] overflow-auto rounded-lg border border-zinc-800 bg-zinc-950 p-4 font-mono text-xs leading-relaxed text-zinc-200 ${focusRing}`}
+            className={`force-dark scrollbar-thin max-h-[480px] overflow-auto rounded-2xl border border-zinc-800 bg-zinc-950 p-4 font-mono text-xs leading-relaxed text-zinc-200 ${focusRing}`}
           >
             {mermaidToText(graph.mermaid)}
           </pre>
-          <p className="text-xs text-zinc-400">
+          <p className="text-xs text-label-2">
             {graph.nodes.length} nodes · {graph.edges.length} edges
           </p>
         </div>

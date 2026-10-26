@@ -1,7 +1,9 @@
-import { Lock } from "lucide-react";
+import { EyeOff } from "lucide-react";
+import { categoryName } from "@/lib/friendly";
 
 const TOKEN_RE = /\[REDACTED:[^\]\s]+\]/g;
 
+/** Renders [REDACTED:EMAIL]-style tokens as friendly "hidden" pills. */
 export function RedactedText({ text }: { text: string }) {
   const parts: Array<{ kind: "text" | "token"; value: string }> = [];
   let last = 0;
@@ -15,19 +17,21 @@ export function RedactedText({ text }: { text: string }) {
 
   return (
     <>
-      {parts.map((p, i) =>
-        p.kind === "token" ? (
+      {parts.map((p, i) => {
+        if (p.kind === "text") return <span key={i}>{p.value}</span>;
+        const raw = p.value.slice(10, -1).toLowerCase();
+        return (
           <span
             key={i}
-            className="mx-0.5 inline-flex items-center gap-1 whitespace-nowrap rounded border border-amber-500/40 bg-amber-500/15 px-1.5 py-px align-baseline font-mono text-[0.8em] font-semibold text-amber-300"
+            title={`Hidden: ${p.value}`}
+            className="mx-0.5 inline-flex items-center gap-1 whitespace-nowrap rounded-full bg-redact/15 px-2 py-px align-baseline font-sans text-[0.85em] font-semibold text-redact-text"
           >
-            <Lock className="h-3 w-3" aria-hidden="true" />
-            {p.value.slice(1, -1)}
+            <EyeOff className="h-3 w-3" aria-hidden="true" />
+            {categoryName(raw)} hidden
+            <span className="sr-only"> ({p.value})</span>
           </span>
-        ) : (
-          <span key={i}>{p.value}</span>
-        ),
-      )}
+        );
+      })}
     </>
   );
 }

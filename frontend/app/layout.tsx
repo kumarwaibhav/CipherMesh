@@ -1,9 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { JetBrains_Mono, Space_Grotesk } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
+import { AppShell } from "./components/AppShell";
 import { THEME_BOOT_SCRIPT } from "@/lib/theme";
 import "./globals.css";
 
-const sans = Space_Grotesk({
+const sans = Inter({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-sans",
@@ -22,7 +23,7 @@ const DESCRIPTION = "Protect every prompt. Across every model. Before data leave
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: { default: "CipherMesh Console", template: "%s · CipherMesh" },
+  title: { default: "CipherMesh — check a prompt before it reaches AI", template: "%s · CipherMesh" },
   description: DESCRIPTION,
   applicationName: "CipherMesh",
   openGraph: {
@@ -40,8 +41,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#0B0C0E" },
-    { media: "(prefers-color-scheme: light)", color: "#F6F5F2" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
+    { media: "(prefers-color-scheme: light)", color: "#F2F2F7" },
   ],
   width: "device-width",
   initialScale: 1,
@@ -54,7 +55,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
       </head>
-      <body className="min-h-screen bg-zinc-950 font-sans text-zinc-100">{children}</body>
+      <body className="min-h-screen font-sans text-label">
+        <AppShell>{children}</AppShell>
+      </body>
     </html>
   );
 }

@@ -1,11 +1,5 @@
-import { Console } from "./components/Console";
-import { Header } from "./components/Header";
+import { Checker } from "./components/Checker";
 
 export default function HomePage() {
-  return (
-    <>
-      <Header />
-      <Console />
-    </>
-  );
+  return <Checker />;
 }

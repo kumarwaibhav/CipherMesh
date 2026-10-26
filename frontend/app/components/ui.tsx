@@ -4,38 +4,49 @@ import type { ActionDecision, ResponseDecision } from "@/lib/api";
 
 export type AnyDecision = ActionDecision | ResponseDecision;
 
+/**
+ * Apple colour psychology: green = done/safe, orange = changed/caution, indigo = waiting on a person,
+ * red = stopped. Each decision keeps its word next to the colour, so it never relies on colour alone.
+ */
 export const DECISION_STYLES: Record<
   AnyDecision,
-  { badge: string; card: string; text: string; dot: string; bar: string }
+  { badge: string; card: string; text: string; dot: string; icon: string }
 > = {
   ALLOW: {
-    badge: "bg-emerald-500/15 text-emerald-300 ring-emerald-500/40",
-    card: "border-emerald-500/40 bg-emerald-950/70 dark:bg-emerald-500/[0.07]",
-    text: "text-emerald-300",
-    dot: "bg-emerald-400",
-    bar: "bg-emerald-500",
+    badge: "bg-allow/15 text-allow-text",
+    card: "bg-allow/[0.08] border-allow/30",
+    text: "text-allow-text",
+    dot: "bg-allow",
+    icon: "bg-allow text-white",
   },
   REDACT: {
-    badge: "bg-amber-500/15 text-amber-300 ring-amber-500/40",
-    card: "border-amber-500/40 bg-amber-950/70 dark:bg-amber-500/[0.07]",
-    text: "text-amber-300",
-    dot: "bg-amber-400",
-    bar: "bg-amber-500",
+    badge: "bg-redact/15 text-redact-text",
+    card: "bg-redact/[0.08] border-redact/30",
+    text: "text-redact-text",
+    dot: "bg-redact",
+    icon: "bg-redact text-white",
   },
   REVIEW: {
-    badge: "bg-sky-500/15 text-sky-300 ring-sky-500/40",
-    card: "border-sky-500/40 bg-sky-950/70 dark:bg-sky-500/[0.07]",
-    text: "text-sky-300",
-    dot: "bg-sky-400",
-    bar: "bg-sky-500",
+    badge: "bg-review/15 text-review-text",
+    card: "bg-review/[0.08] border-review/30",
+    text: "text-review-text",
+    dot: "bg-review",
+    icon: "bg-review text-white",
   },
   BLOCK: {
-    badge: "bg-red-500/15 text-red-300 ring-red-500/40",
-    card: "border-red-500/50 bg-red-950/70 dark:bg-red-500/[0.07]",
-    text: "text-red-300",
-    dot: "bg-red-500",
-    bar: "bg-red-500",
+    badge: "bg-block/15 text-block-text",
+    card: "bg-block/[0.08] border-block/30",
+    text: "text-block-text",
+    dot: "bg-block",
+    icon: "bg-block text-white",
   },
+};
+
+export const DECISION_WORDS: Record<AnyDecision, string> = {
+  ALLOW: "Safe",
+  REDACT: "Cleaned",
+  REVIEW: "Waiting",
+  BLOCK: "Blocked",
 };
 
 function isDecision(value: string): value is AnyDecision {
@@ -43,20 +54,13 @@ function isDecision(value: string): value is AnyDecision {
 }
 
 export function DecisionBadge({ decision, size = "md" }: { decision: string; size?: "sm" | "md" | "lg" }) {
-  const style = isDecision(decision)
-    ? DECISION_STYLES[decision].badge
-    : "bg-zinc-800 text-zinc-300 ring-zinc-700";
-  const sizing =
-    size === "lg"
-      ? "px-3 py-1 text-sm"
-      : size === "sm"
-        ? "px-1.5 py-0.5 text-[10px]"
-        : "px-2 py-0.5 text-xs";
+  const style = isDecision(decision) ? DECISION_STYLES[decision].badge : "well text-label-2";
+  const sizing = size === "lg" ? "px-3 py-1 text-sm" : size === "sm" ? "px-2 py-0.5 text-[11px]" : "px-2.5 py-0.5 text-xs";
   return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-md font-mono font-bold uppercase tracking-wider ring-1 ring-inset ${style} ${sizing}`}
-    >
-      {decision}
+    <span className={`inline-flex items-center gap-1.5 rounded-full font-semibold ${style} ${sizing}`}>
+      {isDecision(decision) ? <span className={`h-1.5 w-1.5 rounded-full ${DECISION_STYLES[decision].dot}`} aria-hidden="true" /> : null}
+      {isDecision(decision) ? DECISION_WORDS[decision] : decision}
+      <span className="sr-only"> ({decision})</span>
     </span>
   );
 }
@@ -67,8 +71,9 @@ export function Card({
   actions,
   children,
   className = "",
-  bodyClassName = "p-4",
+  bodyClassName = "p-5",
   id,
+  description,
 }: {
   title?: ReactNode;
   icon?: ReactNode;
@@ -77,20 +82,24 @@ export function Card({
   className?: string;
   bodyClassName?: string;
   id?: string;
+  description?: ReactNode;
 }) {
   const headingId = id ? `${id}-heading` : undefined;
   return (
-    <section
-      id={id}
-      aria-labelledby={title ? headingId : undefined}
-      className={`min-w-0 rounded-2xl border border-zinc-800 bg-zinc-900 shadow-card ${className}`}
-    >
+    <section id={id} aria-labelledby={title ? headingId : undefined} className={`glass min-w-0 rounded-3xl ${className}`}>
       {title ? (
-        <header className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 px-4 py-3 sm:px-5">
-          <h2 id={headingId} className="flex items-center gap-2 text-sm font-semibold tracking-wide text-zinc-100">
-            {icon ? <span className="text-zinc-400" aria-hidden="true">{icon}</span> : null}
-            {title}
-          </h2>
+        <header className="flex flex-wrap items-start justify-between gap-2 px-5 pt-5">
+          <div className="min-w-0">
+            <h2 id={headingId} className="flex items-center gap-2 text-[17px] font-semibold tracking-tight text-label">
+              {icon ? (
+                <span className="text-label-2" aria-hidden="true">
+                  {icon}
+                </span>
+              ) : null}
+              {title}
+            </h2>
+            {description ? <p className="mt-0.5 text-sm text-label-2">{description}</p> : null}
+          </div>
           {actions ? <div className="flex items-center gap-2">{actions}</div> : null}
         </header>
       ) : null}
@@ -101,17 +110,14 @@ export function Card({
 
 export function ErrorBanner({ message, onDismiss }: { message: string; onDismiss?: () => void }) {
   return (
-    <div
-      role="alert"
-      className="flex items-start gap-3 rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2.5 text-sm text-red-200"
-    >
-      <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-red-400" aria-hidden="true" />
-      <p className="min-w-0 flex-1 break-words">{message}</p>
+    <div role="alert" className="glass flex items-start gap-3 rounded-2xl border-block/30 px-4 py-3 text-sm text-block-text">
+      <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+      <p className="min-w-0 flex-1 break-words font-medium">{message}</p>
       {onDismiss ? (
         <button
           type="button"
           onClick={onDismiss}
-          className="rounded p-0.5 text-red-300 hover:bg-red-500/15 hover:text-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+          className={`rounded-full p-1 hover:bg-block/10 ${focusRing}`}
           aria-label="Dismiss error"
         >
           <X className="h-4 w-4" aria-hidden="true" />
@@ -122,11 +128,7 @@ export function ErrorBanner({ message, onDismiss }: { message: string; onDismiss
 }
 
 export function EmptyState({ children }: { children: ReactNode }) {
-  return (
-    <p className="rounded-lg border border-dashed border-zinc-800 px-4 py-6 text-center text-sm text-zinc-400">
-      {children}
-    </p>
-  );
+  return <p className="well rounded-2xl px-4 py-6 text-center text-sm text-label-2">{children}</p>;
 }
 
 export function KeyValue({
@@ -142,14 +144,23 @@ export function KeyValue({
 }) {
   return (
     <div className={`min-w-0 ${className}`}>
-      <dt className="font-mono text-[11px] font-medium uppercase tracking-[0.12em] text-zinc-400">{label}</dt>
-      <dd className={`mt-0.5 break-all text-sm text-zinc-100 ${mono ? "font-mono" : ""}`}>{value}</dd>
+      <dt className="text-xs font-medium text-label-2">{label}</dt>
+      <dd className={`mt-0.5 break-all text-[15px] text-label ${mono ? "font-mono text-sm" : ""}`}>{value}</dd>
     </div>
   );
 }
 
 export const focusRing =
-  "focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950";
+  "focus:outline-none focus-visible:ring-4 focus-visible:ring-tint/40 focus-visible:ring-offset-0";
 
 export const inputBase =
-  "w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500 transition-colors hover:border-zinc-600 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30 disabled:opacity-60";
+  "well w-full rounded-xl border border-transparent px-3.5 py-2.5 text-[15px] text-label placeholder:text-label-3 transition focus:border-tint/60 focus:outline-none focus:ring-4 focus:ring-tint/20 disabled:opacity-60";
+
+export const buttonPrimary =
+  "inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-tint px-6 text-[15px] font-semibold text-white shadow-[0_6px_20px_-6px_rgb(0_113_227/0.6)] transition hover:bg-tint-hover active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-label-3/30 disabled:text-label-2 disabled:shadow-none";
+
+export const buttonSecondary =
+  "glass-thin inline-flex min-h-[40px] items-center justify-center gap-2 rounded-full px-4 text-sm font-semibold text-label transition hover:bg-[rgb(var(--glass)/0.7)] active:scale-[0.98]";
+
+export const buttonPlain =
+  "inline-flex min-h-[40px] items-center justify-center gap-1.5 rounded-full px-3 text-sm font-semibold text-tint-text transition hover:bg-tint/10";
