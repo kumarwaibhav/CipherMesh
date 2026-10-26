@@ -51,7 +51,7 @@ export function MermaidSource() {
         <button
           type="button"
           onClick={() => void load()}
-          className={`inline-flex items-center gap-1 rounded-md border border-zinc-700 px-2 py-1 text-xs text-zinc-300 hover:bg-zinc-800 hover:text-white ${focusRing}`}
+          className={`inline-flex items-center gap-1 rounded-md border border-zinc-700 px-2 py-1 text-xs text-zinc-300 hover:bg-zinc-800 hover:text-zinc-50 ${focusRing}`}
         >
           <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" /> Reload
         </button>
@@ -73,7 +73,7 @@ export function MermaidSource() {
             role="region"
             aria-label="Mermaid graph source"
             tabIndex={0}
-            className={`scrollbar-thin max-h-[480px] overflow-auto rounded-lg border border-zinc-800 bg-[#0a0a0b] p-4 font-mono text-xs leading-relaxed text-zinc-200 ${focusRing}`}
+            className={`force-dark scrollbar-thin max-h-[480px] overflow-auto rounded-lg border border-zinc-800 bg-zinc-950 p-4 font-mono text-xs leading-relaxed text-zinc-200 ${focusRing}`}
           >
             {mermaidToText(graph.mermaid)}
           </pre>

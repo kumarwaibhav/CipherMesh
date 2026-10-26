@@ -1,13 +1,16 @@
 <div align="center">
 
-# 🛡️ CipherMesh
-
-### AI Privacy Control Plane
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/brand/banner-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="docs/brand/banner-light.png">
+  <img src="docs/brand/banner-dark.png" alt="CipherMesh — the AI privacy control plane" width="100%">
+</picture>
 
 **Protect every prompt. Across every model. Before data leaves.**
 
-[![Live Console](https://img.shields.io/badge/Live-Console-d7191f?style=for-the-badge)](https://ciphermesh-console.vercel.app)
-[![Live API](https://img.shields.io/badge/Live-API-141414?style=for-the-badge)](https://ciphermesh-api.vercel.app/docs)
+[![Live Console](https://img.shields.io/badge/Live-Console-E5202A?style=for-the-badge)](https://ciphermesh-console.vercel.app)
+[![Live API](https://img.shields.io/badge/Live-API-0B0C0E?style=for-the-badge)](https://ciphermesh-api.vercel.app/docs)
+[![Brand](https://img.shields.io/badge/Brand-Guidelines-2A2E35?style=for-the-badge)](https://ciphermesh-console.vercel.app/brand)
 
 ![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.162-009688?logo=fastapi&logoColor=white)
@@ -15,8 +18,18 @@
 ![Next.js](https://img.shields.io/badge/Next.js-14-000000?logo=nextdotjs&logoColor=white)
 ![Tailwind](https://img.shields.io/badge/Tailwind-3.4-06B6D4?logo=tailwindcss&logoColor=white)
 ![Tests](https://img.shields.io/badge/tests-161%20passing-16a34a)
+![WCAG](https://img.shields.io/badge/contrast-WCAG%20AA-16a34a)
 
-<img src="docs/screenshots/redact.png" alt="CipherMesh console showing a REDACT decision" width="900">
+<table>
+  <tr>
+    <td width="50%" align="center"><b>Dark</b></td>
+    <td width="50%" align="center"><b>Light</b></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/console_dark.png" alt="CipherMesh console in dark mode" width="100%"></td>
+    <td><img src="docs/screenshots/console_light.png" alt="CipherMesh console in light mode" width="100%"></td>
+  </tr>
+</table>
 
 </div>
 
@@ -29,17 +42,18 @@
 3. [Architecture](#-architecture)
 4. [How a request flows](#-how-a-request-flows)
 5. [Screenshots](#-screenshots)
-6. [Tech stack](#-tech-stack)
-7. [Project structure](#-project-structure)
-8. [Run it on your machine](#-run-it-on-your-machine)
-9. [Try it](#-try-it)
-10. [API reference](#-api-reference)
-11. [Configuration](#-configuration)
-12. [Security design](#-security-design)
-13. [Testing](#-testing)
-14. [Deployment](#-deployment)
-15. [Limitations](#-limitations)
-16. [Author](#-author)
+6. [Brand](#-brand)
+7. [Tech stack](#-tech-stack)
+8. [Project structure](#-project-structure)
+9. [Run it on your machine](#-run-it-on-your-machine)
+10. [Try it](#-try-it)
+11. [API reference](#-api-reference)
+12. [Configuration](#-configuration)
+13. [Security design](#-security-design)
+14. [Testing](#-testing)
+15. [Deployment](#-deployment)
+16. [Limitations](#-limitations)
+17. [Author](#-author)
 
 ---
 
@@ -182,9 +196,9 @@ All screenshots come from the live console at [ciphermesh-console.vercel.app](ht
 <p align="center">
   <img src="docs/screenshots/mobile_1.png" alt="Mobile: metrics and prompt form" width="230">
   &nbsp;
-  <img src="docs/screenshots/mobile_2.png" alt="Mobile: decision card" width="230">
+  <img src="docs/screenshots/mobile_2.png" alt="Mobile: REDACT decision in dark mode" width="230">
   &nbsp;
-  <img src="docs/screenshots/mobile_3.png" alt="Mobile: telemetry terminal" width="230">
+  <img src="docs/screenshots/mobile_3.png" alt="Mobile: BLOCK decision in light mode" width="230">
 </p>
 
 ### What each panel shows
@@ -201,6 +215,24 @@ All screenshots come from the live console at [ciphermesh-console.vercel.app](ht
 
 ---
 
+## 🎨 Brand
+
+<img src="docs/screenshots/brand_page.png" alt="CipherMesh brand guidelines page" width="100%">
+
+The full guidelines live in the console at **[/brand](https://ciphermesh-console.vercel.app/brand)**.
+
+| Element | Rule |
+|:--|:--|
+| **Mark** | An open hexagon of six mesh nodes (every model) around a red core (the protected prompt), with one red path leaving through the open side (the inspected gate). |
+| **Colour** | Graphite `#0B0C0E`, Carbon `#16181C`, Steel `#2A2E35`, Paper `#F6F5F2`, Signal Red `#E5202A`. Decision colours are used only for ALLOW, REDACT, REVIEW and BLOCK. |
+| **Type** | Space Grotesk for people, JetBrains Mono for machine output (IDs, hashes, traces). |
+| **Themes** | Light, dark and *match system*. The choice is remembered per browser and applied before first paint, so the page never flashes. Every text pairing meets WCAG AA in both themes (checked with axe-core). |
+| **Voice** | The calm guard: precise, calm, plain and accountable. "Nothing was sent. Rotate this key now." |
+
+Logo files (SVG) are in [`docs/brand/`](docs/brand) and served at `/brand/*.svg`. Use `docs/brand/social-preview.png` as the GitHub social preview image.
+
+---
+
 ## 🧰 Tech stack
 
 | Area | Technology |
@@ -209,7 +241,7 @@ All screenshots come from the live console at [ciphermesh-console.vercel.app](ht
 | API | **FastAPI** 0.162, Pydantic 2, Uvicorn |
 | Encryption | `cryptography`: PBKDF2-HMAC-SHA256 + Fernet (AES-128-CBC + HMAC-SHA256), MultiFernet key rotation |
 | Detection engine | CipherMesh engine v1: regex + checksums + normalisation, policy R1–R5, Contract-Net negotiation, utility router |
-| Frontend | **Next.js 14** (App Router), React 18, TypeScript (strict), **Tailwind CSS**, lucide icons |
+| Frontend | **Next.js 14** (App Router), React 18, TypeScript (strict), **Tailwind CSS** with CSS-variable design tokens (light + dark), Space Grotesk + JetBrains Mono, lucide icons |
 | Testing | pytest (161 tests), ESLint, `tsc`, Playwright end-to-end checks |
 | Delivery | Docker, docker-compose, GitHub Actions CI, Vercel |
 
@@ -241,6 +273,7 @@ cipher_mesh_agent/
 │   ├── app/
 │   │   ├── page.tsx             ← main console
 │   │   ├── architecture/        ← architecture page
+│   │   ├── brand/               ← brand guidelines page
 │   │   └── components/          ← decision card, terminal, review queue, …
 │   ├── lib/api.ts               ← typed API client
 │   ├── package.json
@@ -248,6 +281,7 @@ cipher_mesh_agent/
 ├── docs/
 │   ├── API_CONTRACT.md          ← full API specification
 │   ├── AUDIT.md                 ← independent audit findings and fixes
+│   ├── brand/                   ← logo SVGs, README banners, social preview
 │   ├── diagrams/                ← architecture, LangGraph flow, sequence (SVG + PNG)
 │   └── screenshots/
 ├── docker-compose.yml           ← run everything with one command

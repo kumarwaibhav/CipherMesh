@@ -13,7 +13,7 @@ export function ProviderSeesPanel({ result }: { result: InspectResponse }) {
             Transmitted prompt
           </h3>
           {result.processed_prompt === null ? (
-            <p className="rounded-lg border border-red-500/30 bg-red-950/20 px-3 py-2.5 text-sm font-medium text-red-200">
+            <p className="rounded-lg border border-red-500/30 bg-red-500/[0.07] px-3 py-2.5 text-sm font-medium text-red-300">
               Nothing transmitted
             </p>
           ) : (
@@ -158,10 +158,10 @@ export function RoutePanel({ route }: { route: RouteResult }) {
     >
       {route.selected ? (
         <p className="mb-3 text-sm text-zinc-300">
-          Selected <span className="font-semibold text-white">{providerLabel(route.selected)}</span>
+          Selected <span className="font-semibold text-zinc-50">{providerLabel(route.selected)}</span>
           {typeof route.utility === "number" ? (
             <>
-              {" "}with utility <span className="font-mono text-white">{route.utility.toFixed(2)}</span>
+              {" "}with utility <span className="font-mono text-zinc-50">{route.utility.toFixed(2)}</span>
             </>
           ) : null}
           .
@@ -194,7 +194,7 @@ export function RoutePanel({ route }: { route: RouteResult }) {
                 return (
                   <tr
                     key={ev.provider_id}
-                    className={`border-b border-zinc-800/60 last:border-0 ${selected ? "bg-red-600/10" : ""}`}
+                    className={`border-b border-zinc-800/60 last:border-0 ${selected ? "bg-brand/[0.06]" : ""}`}
                     aria-current={selected ? "true" : undefined}
                   >
                     <td className="py-2 pr-3">

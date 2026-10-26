@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
-import { Check, KeyRound, Settings, ShieldCheck, UserCheck } from "lucide-react";
+import { Check, KeyRound, Settings, UserCheck } from "lucide-react";
 import {
   API_BASE_URL,
   OPEN_SETTINGS_EVENT,
@@ -14,11 +14,14 @@ import {
   writeToken,
 } from "@/lib/api";
 import { POLL_INTERVAL_MS, usePolling } from "./usePolling";
+import { LogoMark, Wordmark } from "./Logo";
+import { ThemeToggle } from "./ThemeToggle";
 import { focusRing, inputBase } from "./ui";
 
 const NAV = [
   { href: "/", label: "Console" },
   { href: "/architecture", label: "Architecture" },
+  { href: "/brand", label: "Brand" },
 ] as const;
 
 function HealthPill({ intervalMs }: { intervalMs: number }) {
@@ -27,10 +30,10 @@ function HealthPill({ intervalMs }: { intervalMs: number }) {
   const online = !error && data?.status === "ok";
   const label = loading && !data && !error ? "Checking" : online ? "API online" : "API offline";
   const tone = loading && !data && !error
-    ? "border-zinc-700 bg-zinc-900 text-zinc-300"
+    ? "border-zinc-800 bg-zinc-900 text-zinc-300"
     : online
-      ? "border-emerald-500/40 bg-emerald-950/40 text-emerald-300"
-      : "border-red-500/50 bg-red-950/40 text-red-300";
+      ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
+      : "border-red-500/50 bg-red-500/10 text-red-300";
   const dot = loading && !data && !error ? "bg-zinc-500" : online ? "bg-emerald-400" : "bg-red-500";
   const title = online && data
     ? `v${data.version} · graph ${data.graph} · vault ${data.vault} · mode ${data.mode} · uptime ${Math.round(data.uptime_s)}s`
@@ -49,7 +52,7 @@ function HealthPill({ intervalMs }: { intervalMs: number }) {
       </span>
       <span>{label}</span>
       {online && data ? (
-        <span className="hidden font-mono text-[11px] text-emerald-200/80 sm:inline">
+        <span className="hidden font-mono text-[11px] sm:inline">
           v{data.version} · {data.mode}
         </span>
       ) : null}
@@ -140,14 +143,14 @@ function TokenSettings({
       <div className="flex items-center gap-2 lg:pt-5">
         <button
           type="submit"
-          className={`rounded-lg bg-red-600 px-3 py-2 text-sm font-semibold text-white hover:bg-red-500 ${focusRing}`}
+          className={`rounded-lg bg-brand px-3 py-2 text-sm font-semibold text-white hover:bg-brand-hover ${focusRing}`}
         >
           Save tokens
         </button>
         <button
           type="button"
           onClick={onClose}
-          className={`rounded-lg border border-zinc-700 px-3 py-2 text-sm text-zinc-200 hover:bg-zinc-800 ${focusRing}`}
+          className={`rounded-lg border border-zinc-700 px-3 py-2 text-sm text-zinc-200 hover:bg-zinc-800 hover:text-zinc-50 ${focusRing}`}
         >
           Close
         </button>
@@ -185,25 +188,21 @@ export function Header() {
   }, []);
 
   return (
-    <header className="border-b border-zinc-800 bg-zinc-950/90 backdrop-blur supports-[backdrop-filter]:bg-zinc-950/75">
-      <div className="mx-auto flex max-w-[1440px] flex-wrap items-center justify-between gap-x-6 gap-y-3 px-4 py-4 sm:px-6">
-        <div className="flex min-w-0 items-center gap-3">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-red-600 shadow-lg shadow-red-900/40">
-            <ShieldCheck className="h-5 w-5 text-white" aria-hidden="true" />
-          </span>
-          <div className="min-w-0">
-            <Link href="/" className={`rounded text-lg font-extrabold tracking-[0.22em] text-white ${focusRing}`}>
-              CIPHER<span className="text-red-500">MESH</span>
-            </Link>
-            <p className="text-xs text-zinc-400 sm:text-[13px]">
+    <header className="relative z-30 border-b sm:sticky sm:top-0 border-zinc-800 bg-zinc-950/85 backdrop-blur-md supports-[backdrop-filter]:bg-zinc-950/70">
+      <div className="mx-auto flex max-w-[1440px] flex-wrap items-center justify-between gap-x-6 gap-y-3 px-4 py-3 sm:px-6">
+        <Link href="/" aria-label="CipherMesh console home" className={`flex min-w-0 items-center gap-3 rounded-lg ${focusRing}`}>
+          <LogoMark className="h-9 w-9 shrink-0 text-zinc-50" />
+          <span className="min-w-0">
+            <Wordmark className="block text-xl leading-tight text-zinc-50" />
+            <span className="block truncate text-xs text-zinc-400">
               Protect every prompt. Across every model. Before data leaves.
-            </p>
-          </div>
-        </div>
+            </span>
+          </span>
+        </Link>
 
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <nav aria-label="Primary">
-            <ul className="flex items-center gap-1 rounded-lg border border-zinc-800 bg-zinc-900 p-1">
+            <ul className="flex items-center gap-0.5 rounded-lg border border-zinc-800 bg-zinc-900 p-0.5">
               {NAV.map((item) => {
                 const active = pathname === item.href;
                 return (
@@ -211,8 +210,8 @@ export function Header() {
                     <Link
                       href={item.href}
                       aria-current={active ? "page" : undefined}
-                      className={`block rounded-md px-3 py-1.5 text-sm font-medium ${focusRing} ${
-                        active ? "bg-zinc-800 text-white" : "text-zinc-400 hover:text-zinc-100"
+                      className={`block rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${focusRing} ${
+                        active ? "bg-zinc-800 text-zinc-50 shadow-card" : "text-zinc-400 hover:text-zinc-100"
                       }`}
                     >
                       {item.label}
@@ -224,12 +223,13 @@ export function Header() {
           </nav>
           {/* The console polls health; other pages only need a one-off check. */}
           <HealthPill intervalMs={pathname === "/" ? POLL_INTERVAL_MS : 0} />
+          <ThemeToggle />
           <button
             type="button"
             onClick={() => setSettingsOpen((v) => !v)}
             aria-expanded={settingsOpen}
             aria-controls="cm-settings"
-            className={`inline-flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-800 text-zinc-300 hover:bg-zinc-800 hover:text-white ${focusRing}`}
+            className={`inline-flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900 text-zinc-300 hover:bg-zinc-800 hover:text-zinc-50 ${focusRing}`}
             aria-label="Token settings"
             title="Token settings"
           >

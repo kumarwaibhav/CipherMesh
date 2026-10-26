@@ -60,17 +60,17 @@ function DecisionBody({ result, source }: { result: InspectResponse; source: "in
       className={`animate-fade-in rounded-xl border p-4 sm:p-5 ${style.card}`}
     >
       <div className="flex flex-wrap items-start gap-3">
-        <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-zinc-950/60 ${style.text}`}>
+        <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-zinc-900/80 ${style.text}`}>
           <Icon className="h-5 w-5" aria-hidden="true" />
         </span>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <DecisionBadge decision={decision} size="lg" />
-            <span className="rounded-md bg-zinc-950/60 px-2 py-0.5 font-mono text-xs text-zinc-200 ring-1 ring-inset ring-zinc-700">
+            <span className="rounded-md bg-zinc-900/80 px-2 py-0.5 font-mono text-xs text-zinc-200 ring-1 ring-inset ring-zinc-700">
               {result.status}
             </span>
             {source === "review" ? (
-              <span className="rounded-md bg-zinc-950/60 px-2 py-0.5 text-xs text-zinc-300 ring-1 ring-inset ring-zinc-700">
+              <span className="rounded-md bg-zinc-900/80 px-2 py-0.5 text-xs text-zinc-300 ring-1 ring-inset ring-zinc-700">
                 review outcome
               </span>
             ) : null}

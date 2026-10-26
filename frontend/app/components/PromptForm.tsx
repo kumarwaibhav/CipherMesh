@@ -152,7 +152,7 @@ export function PromptForm({
             type="submit"
             disabled={!canSubmit}
             aria-busy={busy}
-            className={`inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-red-950/50 transition hover:bg-red-500 disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-400 disabled:shadow-none ${focusRing}`}
+            className={`inline-flex min-h-[44px] items-center gap-2 rounded-lg bg-brand px-5 py-2 text-sm font-semibold text-white shadow-raised transition hover:bg-brand-hover disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-400 disabled:shadow-none ${focusRing}`}
           >
             {busy ? (
               <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />

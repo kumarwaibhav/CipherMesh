@@ -14,7 +14,7 @@ export interface TraceRun {
 }
 
 const LEVEL_TEXT: Record<TelemetryLevel, string> = {
-  info: "text-cyan-300",
+  info: "text-sky-300",
   success: "text-emerald-400",
   warn: "text-amber-300",
   block: "text-red-400",
@@ -90,13 +90,13 @@ export function TelemetryTerminal({ runs, busy }: { runs: TraceRun[]; busy: bool
   return (
     <section
       aria-labelledby="terminal-title"
-      className="min-w-0 overflow-hidden rounded-xl border border-zinc-800 bg-[#0a0a0b] shadow-xl shadow-black/40"
+      className="force-dark min-w-0 overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950 text-zinc-100 shadow-raised"
     >
       <div className="flex items-center gap-3 border-b border-zinc-800 bg-zinc-900/90 px-3 py-2">
         <div className="flex items-center gap-1.5" aria-hidden="true">
-          <span className="h-3 w-3 rounded-full bg-[#ff5f57]" />
-          <span className="h-3 w-3 rounded-full bg-[#febc2e]" />
-          <span className="h-3 w-3 rounded-full bg-[#28c840]" />
+          <span className="h-2.5 w-2.5 rounded-full bg-zinc-700" />
+          <span className="h-2.5 w-2.5 rounded-full bg-zinc-700" />
+          <span className="h-2.5 w-2.5 rounded-full bg-brand" />
         </div>
         <h2 id="terminal-title" className="min-w-0 flex-1 truncate text-center font-mono text-xs text-zinc-400">
           ciphermesh — langgraph trace
@@ -105,7 +105,7 @@ export function TelemetryTerminal({ runs, busy }: { runs: TraceRun[]; busy: bool
           type="button"
           onClick={onCopy}
           disabled={!latest}
-          className="inline-flex items-center gap-1 rounded-md border border-zinc-700 px-2 py-1 font-mono text-[11px] text-zinc-300 hover:bg-zinc-800 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 disabled:cursor-not-allowed disabled:opacity-40"
+          className="inline-flex items-center gap-1 rounded-md border border-zinc-700 px-2 py-1 font-mono text-[11px] text-zinc-300 hover:bg-zinc-800 hover:text-zinc-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 disabled:cursor-not-allowed disabled:opacity-40"
           aria-label="Copy latest trace to clipboard"
         >
           {copyState === "copied" ? (
@@ -171,7 +171,7 @@ export function TelemetryTerminal({ runs, busy }: { runs: TraceRun[]; busy: bool
                 <p key={`${t.step}-${i}`} className="break-words pl-2">
                   <span className="text-zinc-400">[{t.step}]</span>{" "}
                   <span className="text-zinc-200">{t.node}</span>{" "}
-                  <span className={`font-semibold ${LEVEL_TEXT[t.level] ?? "text-slate-300"}`}>{t.event}</span>{" "}
+                  <span className={`font-semibold ${LEVEL_TEXT[t.level] ?? "text-zinc-300"}`}>{t.event}</span>{" "}
                   <span className="text-zinc-300">{t.detail}</span>{" "}
                   <span className="text-zinc-400">({t.elapsed_ms.toFixed(2)} ms)</span>
                 </p>

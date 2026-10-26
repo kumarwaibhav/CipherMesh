@@ -110,7 +110,7 @@ function TicketCard({
             type="button"
             onClick={() => decide(true)}
             disabled={pending !== null}
-            className={`inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-60 ${focusRing}`}
+            className={`inline-flex min-h-[36px] flex-1 items-center justify-center gap-1.5 rounded-lg bg-emerald-300 px-3 py-1.5 text-xs font-semibold text-zinc-950 hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-60 ${focusRing}`}
           >
             {pending === "approve" ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
@@ -123,7 +123,7 @@ function TicketCard({
             type="button"
             onClick={() => decide(false)}
             disabled={pending !== null}
-            className={`inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-red-500/50 bg-red-950/40 px-3 py-1.5 text-xs font-semibold text-red-200 hover:bg-red-900/50 disabled:cursor-not-allowed disabled:opacity-60 ${focusRing}`}
+            className={`inline-flex min-h-[36px] flex-1 items-center justify-center gap-1.5 rounded-lg border border-red-500/50 bg-red-500/10 px-3 py-1.5 text-xs font-semibold text-red-300 hover:bg-red-500/20 disabled:cursor-not-allowed disabled:opacity-60 ${focusRing}`}
           >
             {pending === "deny" ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
@@ -224,14 +224,14 @@ export function ReviewQueue({
       id="review-queue"
       actions={
         <>
-          <span className="rounded-full bg-sky-500/15 px-2 py-0.5 font-mono text-[11px] text-sky-200 ring-1 ring-inset ring-sky-500/30">
+          <span className="rounded-full bg-sky-500/15 px-2 py-0.5 font-mono text-[11px] font-semibold text-sky-300 ring-1 ring-inset ring-sky-500/30">
             {typeof shownCount === "number" ? shownCount : "—"} pending
           </span>
           <button
             type="button"
             onClick={() => (access !== null ? setAccess(null) : refresh())}
             disabled={access === "disabled"}
-            className={`rounded-md p-1 text-zinc-400 hover:bg-zinc-800 hover:text-white disabled:cursor-not-allowed disabled:opacity-40 ${focusRing}`}
+            className={`rounded-md p-1 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-50 disabled:cursor-not-allowed disabled:opacity-40 ${focusRing}`}
             aria-label="Refresh review queue"
           >
             <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" />

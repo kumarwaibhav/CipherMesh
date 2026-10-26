@@ -10,28 +10,28 @@ export const DECISION_STYLES: Record<
 > = {
   ALLOW: {
     badge: "bg-emerald-500/15 text-emerald-300 ring-emerald-500/40",
-    card: "border-emerald-500/40 bg-emerald-950/30",
+    card: "border-emerald-500/40 bg-emerald-950/70 dark:bg-emerald-500/[0.07]",
     text: "text-emerald-300",
     dot: "bg-emerald-400",
     bar: "bg-emerald-500",
   },
   REDACT: {
     badge: "bg-amber-500/15 text-amber-300 ring-amber-500/40",
-    card: "border-amber-500/40 bg-amber-950/30",
+    card: "border-amber-500/40 bg-amber-950/70 dark:bg-amber-500/[0.07]",
     text: "text-amber-300",
     dot: "bg-amber-400",
     bar: "bg-amber-500",
   },
   REVIEW: {
     badge: "bg-sky-500/15 text-sky-300 ring-sky-500/40",
-    card: "border-sky-500/40 bg-sky-950/30",
+    card: "border-sky-500/40 bg-sky-950/70 dark:bg-sky-500/[0.07]",
     text: "text-sky-300",
     dot: "bg-sky-400",
     bar: "bg-sky-500",
   },
   BLOCK: {
     badge: "bg-red-500/15 text-red-300 ring-red-500/40",
-    card: "border-red-500/50 bg-red-950/30",
+    card: "border-red-500/50 bg-red-950/70 dark:bg-red-500/[0.07]",
     text: "text-red-300",
     dot: "bg-red-500",
     bar: "bg-red-500",
@@ -54,7 +54,7 @@ export function DecisionBadge({ decision, size = "md" }: { decision: string; siz
         : "px-2 py-0.5 text-xs";
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-md font-semibold uppercase tracking-wider ring-1 ring-inset ${style} ${sizing}`}
+      className={`inline-flex items-center gap-1.5 rounded-md font-mono font-bold uppercase tracking-wider ring-1 ring-inset ${style} ${sizing}`}
     >
       {decision}
     </span>
@@ -83,10 +83,10 @@ export function Card({
     <section
       id={id}
       aria-labelledby={title ? headingId : undefined}
-      className={`min-w-0 rounded-xl border border-zinc-800 bg-zinc-900/80 shadow-sm shadow-black/20 ${className}`}
+      className={`min-w-0 rounded-2xl border border-zinc-800 bg-zinc-900 shadow-card ${className}`}
     >
       {title ? (
-        <header className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 px-4 py-3">
+        <header className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 px-4 py-3 sm:px-5">
           <h2 id={headingId} className="flex items-center gap-2 text-sm font-semibold tracking-wide text-zinc-100">
             {icon ? <span className="text-zinc-400" aria-hidden="true">{icon}</span> : null}
             {title}
@@ -103,7 +103,7 @@ export function ErrorBanner({ message, onDismiss }: { message: string; onDismiss
   return (
     <div
       role="alert"
-      className="flex items-start gap-3 rounded-lg border border-red-500/40 bg-red-950/40 px-3 py-2.5 text-sm text-red-200"
+      className="flex items-start gap-3 rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2.5 text-sm text-red-200"
     >
       <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-red-400" aria-hidden="true" />
       <p className="min-w-0 flex-1 break-words">{message}</p>
@@ -111,7 +111,7 @@ export function ErrorBanner({ message, onDismiss }: { message: string; onDismiss
         <button
           type="button"
           onClick={onDismiss}
-          className="rounded p-0.5 text-red-300 hover:bg-red-900/50 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+          className="rounded p-0.5 text-red-300 hover:bg-red-500/15 hover:text-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
           aria-label="Dismiss error"
         >
           <X className="h-4 w-4" aria-hidden="true" />
@@ -142,14 +142,14 @@ export function KeyValue({
 }) {
   return (
     <div className={`min-w-0 ${className}`}>
-      <dt className="text-[11px] font-medium uppercase tracking-wider text-zinc-400">{label}</dt>
+      <dt className="font-mono text-[11px] font-medium uppercase tracking-[0.12em] text-zinc-400">{label}</dt>
       <dd className={`mt-0.5 break-all text-sm text-zinc-100 ${mono ? "font-mono" : ""}`}>{value}</dd>
     </div>
   );
 }
 
 export const focusRing =
-  "focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-900";
+  "focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950";
 
 export const inputBase =
-  "w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/40 disabled:opacity-60";
+  "w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500 transition-colors hover:border-zinc-600 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30 disabled:opacity-60";

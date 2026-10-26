@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ShieldCheck } from "lucide-react";
-import { api, errorMessage, type InspectResponse, type TargetProvider } from "@/lib/api";
+import { LogoMark } from "./Logo";
+import { API_BASE_URL, api, errorMessage, type InspectResponse, type TargetProvider } from "@/lib/api";
 import { DecisionCard } from "./DecisionCard";
 import { MetricsStrip } from "./MetricsStrip";
 import { PromptForm } from "./PromptForm";
@@ -13,6 +13,14 @@ import { Card, ErrorBanner } from "./ui";
 import { POLL_INTERVAL_MS, usePolling } from "./usePolling";
 
 const MAX_RUNS = 20;
+
+const API_HOST = (() => {
+  try {
+    return new URL(API_BASE_URL).host;
+  } catch {
+    return API_BASE_URL;
+  }
+})();
 
 export function Console() {
   const [result, setResult] = useState<InspectResponse | null>(null);
@@ -82,7 +90,18 @@ export function Console() {
 
   return (
     <main className="mx-auto flex max-w-[1440px] flex-col gap-4 px-4 py-5 sm:px-6 lg:gap-6 lg:py-6">
-      <h1 className="sr-only">CipherMesh console</h1>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div className="min-w-0">
+          <p className="font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-400">Privacy control plane</p>
+          <h1 className="mt-1 text-2xl font-semibold tracking-tight text-zinc-50 sm:text-3xl">Console</h1>
+          <p className="mt-1 max-w-2xl text-sm text-zinc-300">
+            Inspect, route and audit every prompt before it crosses your trust boundary.
+          </p>
+        </div>
+        <p className="max-w-full truncate rounded-lg border border-zinc-800 bg-zinc-900 px-2.5 py-1 font-mono text-xs text-zinc-400">
+          {API_HOST}
+        </p>
+      </div>
       <MetricsStrip data={metrics.data} error={metrics.error} />
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-6">
@@ -98,10 +117,10 @@ export function Console() {
               {result.response ? <ResponsePanel response={result.response} /> : null}
             </>
           ) : (
-            <Card bodyClassName="p-6">
+            <Card bodyClassName="p-8">
               <div className="flex flex-col items-center gap-2 text-center">
-                <ShieldCheck className="h-8 w-8 text-red-500" aria-hidden="true" />
-                <p className="text-sm font-medium text-zinc-200">No prompt inspected yet</p>
+                <LogoMark className="h-12 w-12 text-zinc-300" />
+                <p className="text-base font-semibold text-zinc-100">No prompt inspected yet</p>
                 <p className="max-w-md text-sm text-zinc-400">
                   Pick a sample or paste a prompt, then press Inspect &amp; Route. CipherMesh will detect sensitive
                   data, apply policy, seal the original in the vault and route only what is safe.
@@ -112,7 +131,7 @@ export function Console() {
         </div>
 
         <aside className="flex min-w-0 flex-col gap-4 lg:col-span-4 lg:gap-6" aria-label="Trace, reviews and vault">
-          <div className="lg:sticky lg:top-4 lg:z-10">
+          <div className="lg:sticky lg:top-[84px] lg:z-10">
             <TelemetryTerminal runs={runs} busy={busy} />
           </div>
           <ReviewQueue

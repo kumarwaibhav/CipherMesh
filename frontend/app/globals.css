@@ -2,27 +2,191 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * CipherMesh design tokens.
+ *
+ * Every Tailwind colour the console uses (zinc, emerald, amber, sky, red, brand) resolves to a
+ * CSS variable holding an "r g b" triplet. Light mode is the default on :root; `.dark` on <html>
+ * switches the whole app, and `.force-dark` pins one subtree (the trace terminal, code blocks)
+ * to the dark palette in either mode.
+ *
+ * Light mode mirrors each scale (50 <-> 950, 100 <-> 900, ...) so a class such as `text-zinc-100`
+ * means "primary text" and `bg-zinc-950` means "page ground" in both themes. Contrast was checked
+ * for every text pairing at WCAG AA (4.5:1) or better.
+ */
 :root {
-  color-scheme: dark;
+  color-scheme: light;
+
+  --zinc-50: 11 12 14;
+  --zinc-100: 20 22 26;
+  --zinc-200: 40 44 50;
+  --zinc-300: 58 63 71;
+  --zinc-400: 84 89 98;
+  --zinc-500: 112 117 126;
+  --zinc-600: 150 155 164;
+  --zinc-700: 205 208 213;
+  --zinc-800: 228 228 224;
+  --zinc-900: 255 255 255;
+  --zinc-950: 246 245 242;
+
+  --emerald-50: 4 36 26;
+  --emerald-100: 8 61 39;
+  --emerald-200: 11 81 50;
+  --emerald-300: 14 106 61;
+  --emerald-400: 21 128 74;
+  --emerald-500: 34 163 94;
+  --emerald-600: 50 194 115;
+  --emerald-700: 61 220 132;
+  --emerald-800: 166 244 197;
+  --emerald-900: 209 250 223;
+  --emerald-950: 236 253 243;
+
+  --amber-50: 48 23 5;
+  --amber-100: 86 47 14;
+  --amber-200: 110 60 14;
+  --amber-300: 138 77 11;
+  --amber-400: 169 98 10;
+  --amber-500: 209 127 14;
+  --amber-600: 233 154 31;
+  --amber-700: 245 177 61;
+  --amber-800: 253 219 138;
+  --amber-900: 254 239 199;
+  --amber-950: 255 248 235;
+
+  --sky-50: 13 31 58;
+  --sky-100: 22 52 94;
+  --sky-200: 22 62 116;
+  --sky-300: 21 74 145;
+  --sky-400: 23 92 181;
+  --sky-500: 29 114 219;
+  --sky-600: 47 139 240;
+  --sky-700: 77 163 255;
+  --sky-800: 181 213 255;
+  --sky-900: 219 234 254;
+  --sky-950: 239 246 255;
+
+  --red-50: 61 7 9;
+  --red-100: 112 22 27;
+  --red-200: 134 20 26;
+  --red-300: 163 18 26;
+  --red-400: 200 20 30;
+  --red-500: 229 32 42;
+  --red-600: 255 77 85;
+  --red-700: 255 122 128;
+  --red-800: 255 194 196;
+  --red-900: 255 224 225;
+  --red-950: 255 241 241;
+
+  --brand: 214 26 36;
+  --brand-hover: 176 18 27;
+
+  --shadow-card: 0 1px 2px 0 rgb(16 18 22 / 0.05), 0 6px 20px -8px rgb(16 18 22 / 0.08);
+  --shadow-raised: 0 1px 2px 0 rgb(16 18 22 / 0.06), 0 12px 32px -12px rgb(16 18 22 / 0.14);
 }
 
+:root.dark,
+.force-dark {
+  color-scheme: dark;
+
+  --zinc-50: 250 249 247;
+  --zinc-100: 242 241 238;
+  --zinc-200: 220 222 226;
+  --zinc-300: 201 204 209;
+  --zinc-400: 150 155 164;
+  --zinc-500: 110 115 124;
+  --zinc-600: 74 79 87;
+  --zinc-700: 58 63 71;
+  --zinc-800: 42 46 53;
+  --zinc-900: 22 24 28;
+  --zinc-950: 11 12 14;
+
+  --emerald-50: 236 253 243;
+  --emerald-100: 209 250 223;
+  --emerald-200: 166 244 197;
+  --emerald-300: 61 220 132;
+  --emerald-400: 50 194 115;
+  --emerald-500: 34 163 94;
+  --emerald-600: 21 128 74;
+  --emerald-700: 14 106 61;
+  --emerald-800: 11 81 50;
+  --emerald-900: 8 61 39;
+  --emerald-950: 4 36 26;
+
+  --amber-50: 255 248 235;
+  --amber-100: 254 239 199;
+  --amber-200: 253 219 138;
+  --amber-300: 245 177 61;
+  --amber-400: 233 154 31;
+  --amber-500: 209 127 14;
+  --amber-600: 169 98 10;
+  --amber-700: 138 77 11;
+  --amber-800: 110 60 14;
+  --amber-900: 86 47 14;
+  --amber-950: 48 23 5;
+
+  --sky-50: 239 246 255;
+  --sky-100: 219 234 254;
+  --sky-200: 181 213 255;
+  --sky-300: 77 163 255;
+  --sky-400: 47 139 240;
+  --sky-500: 29 114 219;
+  --sky-600: 23 92 181;
+  --sky-700: 21 74 145;
+  --sky-800: 22 62 116;
+  --sky-900: 22 52 94;
+  --sky-950: 13 31 58;
+
+  --red-50: 255 241 241;
+  --red-100: 255 224 225;
+  --red-200: 255 194 196;
+  --red-300: 255 122 128;
+  --red-400: 255 77 85;
+  --red-500: 229 32 42;
+  --red-600: 200 20 30;
+  --red-700: 163 18 26;
+  --red-800: 134 20 26;
+  --red-900: 112 22 27;
+  --red-950: 61 7 9;
+
+  --brand: 229 32 42;
+  --brand-hover: 200 20 30;
+
+  --shadow-card: 0 1px 0 0 rgb(255 255 255 / 0.03) inset, 0 1px 2px 0 rgb(0 0 0 / 0.35);
+  --shadow-raised: 0 1px 0 0 rgb(255 255 255 / 0.04) inset, 0 16px 40px -16px rgb(0 0 0 / 0.6);
+}
+
+/* `clip` (not `hidden`) stops sideways scroll without breaking the sticky header. */
 html,
 body {
   max-width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
   @apply bg-zinc-950 text-zinc-100 antialiased;
+  font-feature-settings: "ss01", "ss02";
+}
+
+/* Theme switches recolour instantly instead of animating every border and background. */
+.theme-switching *,
+.theme-switching *::before,
+.theme-switching *::after {
+  transition: none !important;
 }
 
 ::selection {
-  @apply bg-red-600/40 text-white;
+  background: rgb(var(--brand) / 0.28);
 }
 
 .scrollbar-thin {
   scrollbar-width: thin;
-  scrollbar-color: rgb(63 63 70) transparent;
+  scrollbar-color: rgb(var(--zinc-700)) transparent;
+}
+
+/* Faint mesh grid behind the page header. */
+.mesh-grid {
+  background-image: radial-gradient(rgb(var(--zinc-500) / 0.18) 1px, transparent 1.2px);
+  background-size: 24px 24px;
 }
 
 @media (prefers-reduced-motion: reduce) {

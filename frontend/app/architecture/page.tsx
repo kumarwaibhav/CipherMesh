@@ -36,7 +36,7 @@ export default function ArchitecturePage() {
       <Header />
       <main className="mx-auto flex max-w-[1440px] flex-col gap-6 px-4 py-6 sm:px-6">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white">Architecture</h1>
+          <h1 className="text-3xl font-semibold tracking-tight text-zinc-50">Architecture</h1>
           <p className="mt-1 max-w-3xl text-sm text-zinc-400">
             How CipherMesh inspects, seals and routes every prompt before it reaches a model provider.
           </p>
@@ -44,8 +44,8 @@ export default function ArchitecturePage() {
 
         <div className="grid grid-cols-1 gap-6">
           {DIAGRAMS.map((d) => (
-            <figure key={d.src} className="min-w-0 overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/80">
-              <div className="bg-white/[0.03] p-3 sm:p-4">
+            <figure key={d.src} className="min-w-0 overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900 shadow-card">
+              <div className="bg-white p-3 sm:p-4">
                 {/* Below sm the diagram keeps a legible width and scrolls horizontally. */}
                 <div
                   role="region"

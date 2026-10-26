@@ -19,7 +19,7 @@ export function RedactedText({ text }: { text: string }) {
         p.kind === "token" ? (
           <span
             key={i}
-            className="mx-0.5 inline-flex items-center gap-1 whitespace-nowrap rounded border border-amber-500/40 bg-amber-500/15 px-1.5 py-px align-baseline font-mono text-[0.8em] font-semibold text-amber-200"
+            className="mx-0.5 inline-flex items-center gap-1 whitespace-nowrap rounded border border-amber-500/40 bg-amber-500/15 px-1.5 py-px align-baseline font-mono text-[0.8em] font-semibold text-amber-300"
           >
             <Lock className="h-3 w-3" aria-hidden="true" />
             {p.value.slice(1, -1)}
