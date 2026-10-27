@@ -16,7 +16,7 @@
 ![LangGraph](https://img.shields.io/badge/LangGraph-1.2-1C3C3C)
 ![Next.js](https://img.shields.io/badge/Next.js-14-000000?logo=nextdotjs&logoColor=white)
 ![Tailwind](https://img.shields.io/badge/Tailwind-3.4-06B6D4?logo=tailwindcss&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-161%20passing-16a34a)
+![Tests](https://img.shields.io/badge/tests-167%20passing-16a34a)
 ![WCAG](https://img.shields.io/badge/contrast-WCAG%20AA-16a34a)
 
 <table>
@@ -25,8 +25,8 @@
     <td width="50%" align="center"><b>Dark</b></td>
   </tr>
   <tr>
-    <td><img src="docs/screenshots/home_light.png" alt="CipherMesh home screen in light mode" width="100%"></td>
-    <td><img src="docs/screenshots/home_dark.png" alt="CipherMesh home screen in dark mode" width="100%"></td>
+    <td><img src="docs/screenshots/landing_light.png" alt="CipherMesh product site in light mode" width="100%"></td>
+    <td><img src="docs/screenshots/landing_dark.png" alt="CipherMesh product site in dark mode" width="100%"></td>
   </tr>
 </table>
 
@@ -147,90 +147,118 @@ This example follows a prompt containing an **email** and an **Aadhaar number**:
 
 ## 📸 Screenshots
 
-The console follows Apple's Human Interface Guidelines and is designed so anyone can use it without training:
+CipherMesh has two parts: a **product site** that explains the platform (`/`, `/threats`, `/architecture`, `/docs`) and the **console** where people check prompts and reviewers decide (`/check`, `/approvals`, `/activity`). Both follow Apple's Human Interface Guidelines:
 
-- **Two layers, like iOS.** Frosted glass is used only for the floating controls (sidebar, top bar, tab bar, sheets); content sits on solid, quiet surfaces so it always reads clearly, in light and dark.
-- **One obvious action.** A single text box and one blue **Check** button. Six one-click examples ("Email and Phone", "An API Key"…) teach by doing.
-- **The signature moment.** After a check, each private value is shown for a beat, then a redaction bar sweeps across exactly that value and labels what it hides. You see your data being protected.
-- **Answers in plain language.** Every result says what happened and what to do next, with *What the AI Receives* next to *What You Wrote*.
-- **Colour that means something:** blue is the only action colour; green, orange, purple and red are kept for Safe, Cleaned, Waiting and Blocked, always with a word and an icon.
-- **Motion with meaning.** The logo draws itself once per visit and its core pulses blue while a check runs; the navigation highlight slides as you tap. Reduce Motion, Reduce Transparency and Increase Contrast are all respected.
-- **Audited.** Independent functional, accessibility (axe-core plus a pixel-level contrast sampler across about 8,000 text runs) and HIG design reviews; see [docs/DESIGN_REVIEW.md](docs/DESIGN_REVIEW.md).
+- **Two layers, like iOS.** Frosted glass only on the floating controls (navigation bar, sidebar, tab bar, sheets); content sits on solid, quiet surfaces, in light and dark. The app opens in your device's appearance, and the sun/moon button switches it.
+- **A living background.** A faint dot field with a few hair-thin streaks of light drifting across, compositor-only and paused under Reduce Motion.
+- **The signature moment.** After a check, each private value shows for a beat, then a redaction bar sweeps across exactly that value and labels what it hides.
+- **Real-world examples.** Ten role-based scenarios (support, HR, SRE, data, sales, legal…) built from the mistakes people actually make.
+- **Collapsible cards.** Result cards fold away; the CipherMesh mark in each header makes one full turn as it opens or closes.
+- **Audited.** Functional, accessibility (axe-core plus a pixel-level contrast sampler across 15,000+ text runs) and HIG design reviews; see [docs/DESIGN_REVIEW.md](docs/DESIGN_REVIEW.md).
 
-<p align="center">
-  <img src="docs/screenshots/redact_sweep.png" alt="The redaction sweep: the email address and phone number are underlined just before the bar covers them" width="100%">
-  <br><sub>The redaction sweep, caught mid-way: the private values are about to be covered.</sub>
-</p>
-
-### The four results
+### The product site
 
 <table>
   <tr>
-    <td width="50%" align="center"><b>🟢 Safe</b>: nothing private, sent as written</td>
-    <td width="50%" align="center"><b>🟠 Cleaned</b>: Aadhaar and PAN hidden before sending</td>
+    <td width="50%" align="center"><b>Overview</b>: the four-stage pipeline and outcomes</td>
+    <td width="50%" align="center"><b>Threat Intel</b>: documented AI incidents, filterable</td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/landing_platform.png" alt="How it works section of the landing page" width="100%"></td>
+    <td><img src="docs/screenshots/threats.png" alt="AI threat intelligence dashboard" width="100%"></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><b>Every incident sourced</b>, with a live feed beside it</td>
+    <td width="50%" align="center"><b>Architecture</b>: four layers, select one to explore</td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/threats_list.png" alt="Incident list with sources and live feed" width="100%"></td>
+    <td><img src="docs/screenshots/how_layers.png" alt="Interactive architecture layers" width="100%"></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><b>Agent core</b>: Inspect, Seal, Route, Act</td>
+    <td width="50%" align="center"><b>Engineering foundations</b>, lit live by a real check</td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/how_agent_core.png" alt="Agent core stages and exits" width="100%"></td>
+    <td><img src="docs/screenshots/foundations_live.png" alt="Engineering foundations highlighted by a live request" width="100%"></td>
+  </tr>
+</table>
+
+<p align="center">
+  <img src="docs/screenshots/docs.png" alt="Documentation" width="80%">
+  <br><sub>Documentation: quickstart, concepts, API reference, errors, configuration and security model.</sub>
+</p>
+
+### The console
+
+<p align="center">
+  <img src="docs/screenshots/redact_sweep.png" alt="The redaction sweep: values underlined just before the bar covers them" width="100%">
+  <br><sub>The redaction sweep, caught mid-way: the private values are about to be covered.</sub>
+</p>
+
+<table>
+  <tr>
+    <td width="50%" align="center"><b>Check</b>, light</td>
+    <td width="50%" align="center"><b>Check</b>, dark</td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/home_light.png" alt="Check page in light mode" width="100%"></td>
+    <td><img src="docs/screenshots/home_dark.png" alt="Check page in dark mode" width="100%"></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><b>🟢 Safe</b>: a product manager’s PRD outline</td>
+    <td width="50%" align="center"><b>🟠 Cleaned</b>: an offer letter with PAN, Aadhaar and phone</td>
   </tr>
   <tr>
     <td><img src="docs/screenshots/allow.png" alt="Safe result" width="100%"></td>
     <td><img src="docs/screenshots/redact.png" alt="Cleaned result" width="100%"></td>
   </tr>
   <tr>
-    <td width="50%" align="center"><b>🟣 Waiting</b>: an internal link needs a person to approve it</td>
-    <td width="50%" align="center"><b>🔴 Blocked</b>: an API key was found, nothing sent</td>
+    <td width="50%" align="center"><b>🟣 Waiting</b>: an incident summary with internal links</td>
+    <td width="50%" align="center"><b>🔴 Blocked</b>: a production .env file</td>
   </tr>
   <tr>
     <td><img src="docs/screenshots/review_pending.png" alt="Waiting for approval result" width="100%"></td>
     <td><img src="docs/screenshots/block.png" alt="Blocked result" width="100%"></td>
   </tr>
-</table>
-
-### Approvals, activity and settings
-
-<table>
   <tr>
-    <td width="50%" align="center"><b>Approvals</b>: approve or deny held prompts</td>
-    <td width="50%" align="center"><b>After approval</b>: sent only to the private local model</td>
+    <td width="50%" align="center"><b>Approvals</b>: approve or deny, by name</td>
+    <td width="50%" align="center"><b>After approval</b>: private local model only</td>
   </tr>
   <tr>
     <td><img src="docs/screenshots/approvals.png" alt="Approvals screen" width="100%"></td>
     <td><img src="docs/screenshots/review_approved.png" alt="Approved result" width="100%"></td>
   </tr>
   <tr>
-    <td width="50%" align="center"><b>Dark mode</b>: a cleaned result</td>
-    <td width="50%" align="center"><b>Technical details</b>: model choice, full log, encryption, rules</td>
+    <td width="50%" align="center"><b>Dark mode</b>: a cleaned CRM export</td>
+    <td width="50%" align="center"><b>Technical details</b>: collapsible, with model choice, log, encryption, rules</td>
   </tr>
   <tr>
     <td><img src="docs/screenshots/redact_dark.png" alt="Cleaned result in dark mode" width="100%"></td>
-    <td><img src="docs/screenshots/details_dark.png" alt="Technical details panel" width="100%"></td>
+    <td><img src="docs/screenshots/details_dark.png" alt="Technical details" width="100%"></td>
   </tr>
   <tr>
-    <td width="50%" align="center"><b>Activity</b>: what the gateway did, and what you checked</td>
-    <td width="50%" align="center"><b>Settings</b>: appearance and access keys in one sheet</td>
+    <td width="50%" align="center"><b>Activity</b>: gateway totals and your session</td>
+    <td width="50%" align="center"><b>Quick Tour</b>: three steps, one click to try</td>
   </tr>
   <tr>
     <td><img src="docs/screenshots/activity_dark.png" alt="Activity page" width="100%"></td>
-    <td><img src="docs/screenshots/settings_dark.png" alt="Settings sheet" width="100%"></td>
-  </tr>
-  <tr>
-    <td width="50%" align="center"><b>Quick Tour</b>: three steps, one click to try</td>
-    <td width="50%" align="center"><b>How It Works</b>: the whole system in plain words, with diagrams</td>
-  </tr>
-  <tr>
     <td><img src="docs/screenshots/guided_tour.png" alt="Quick Tour sheet" width="100%"></td>
-    <td><img src="docs/screenshots/how_it_works.png" alt="How It Works page" width="100%"></td>
   </tr>
 </table>
 
 ### On a phone (390 px)
 
 <p align="center">
-  <img src="docs/screenshots/mobile_1.png" alt="Phone: home screen" width="230">
+  <img src="docs/screenshots/mobile_1.png" alt="Phone: product site" width="230">
   &nbsp;
   <img src="docs/screenshots/mobile_2.png" alt="Phone: cleaned result" width="230">
   &nbsp;
-  <img src="docs/screenshots/mobile_3.png" alt="Phone: blocked result in dark mode" width="230">
+  <img src="docs/screenshots/mobile_3.png" alt="Phone: threat dashboard in dark mode" width="230">
 </p>
 
-On phones the sidebar becomes an iOS-style glass tab bar at the bottom of the screen, and sheets rise from the bottom with a grabber you can swipe down.
+On phones the console uses an iOS-style glass tab bar, the site collapses into a menu, and sheets rise from the bottom with a grabber you can swipe down.
 
 ---
 
@@ -242,8 +270,8 @@ On phones the sidebar becomes an iOS-style glass tab bar at the bottom of the sc
 | API | **FastAPI** 0.162, Pydantic 2, Uvicorn |
 | Encryption | `cryptography`: PBKDF2-HMAC-SHA256 + Fernet (AES-128-CBC + HMAC-SHA256), MultiFernet key rotation |
 | Detection engine | CipherMesh engine v1: regex + checksums + normalisation, policy R1–R5, Contract-Net negotiation, utility router |
-| Frontend | **Next.js 14** (App Router), React 18, TypeScript (strict), **Tailwind CSS**; glass interface (backdrop blur, light + dark + match-device), Apple system colours, SF Pro / Inter + SF Mono / JetBrains Mono, lucide icons |
-| Testing | pytest (161 tests), ESLint, `tsc`, Playwright end-to-end checks |
+| Frontend | **Next.js 14** (App Router), React 18, TypeScript (strict), **Tailwind CSS**; glass interface (backdrop blur, light + dark following the device), animated light-streak canvas, hand-built accessible charts, Apple system colours, SF Pro / Inter + SF Mono / JetBrains Mono, lucide icons |
+| Testing | pytest (167 tests), ESLint, `tsc`, Playwright end-to-end checks |
 | Delivery | Docker, docker-compose, GitHub Actions CI, Vercel |
 
 ---
@@ -262,21 +290,27 @@ cipher_mesh_agent/
 │   │   │   └── config.py        ← settings read from environment variables
 │   │   ├── api/
 │   │   │   ├── routes.py        ← REST endpoints
+│   │   │   ├── threat_feed.py   ← live AI-incident feed (safe RSS parsing, cache)
 │   │   │   ├── schemas.py       ← request/response models
 │   │   │   └── deps.py          ← tokens and rate limiting
 │   │   └── main.py              ← FastAPI app, CORS, security middleware
 │   ├── ciphermesh/              ← detection, policy, review, negotiation, routing engine
-│   ├── tests/                   ← 161 automated tests
+│   ├── tests/                   ← 167 automated tests
 │   ├── api/index.py             ← Vercel entry point
 │   ├── requirements.txt
 │   └── Dockerfile
 ├── frontend/                    ← Next.js web app
 │   ├── app/
-│   │   ├── page.tsx             ← Check (home)
-│   │   ├── architecture/        ← "How it works" page
-│   │   ├── approvals/           ← approvals screen
-│   │   └── components/          ← app shell, checker, results, approvals, sheets, …
+│   │   ├── page.tsx             ← product landing page
+│   │   ├── threats/             ← AI threat intelligence dashboard
+│   │   ├── architecture/        ← "How It Works" deep dive + live engineering foundations
+│   │   ├── docs/                ← product documentation
+│   │   ├── check/               ← the console: check a prompt
+│   │   ├── approvals/ activity/ ← reviewer queue, gateway activity
+│   │   └── components/          ← site and console shells, results, dashboards, sheets, …
 │   ├── lib/api.ts               ← typed API client
+│   ├── lib/threats.ts           ← curated, sourced AI incident dataset
+│   ├── lib/samples.ts           ← ten role-based real-world examples
 │   ├── package.json
 │   └── Dockerfile
 ├── docs/
@@ -345,7 +379,7 @@ Open **http://localhost:3000**. The dot at the top right should be green and rea
 
 ## 🧪 Try it
 
-Open the app, tap one of the examples (or paste your own text) and press **Check**. You can also call the API directly:
+Open the app, choose **Open Console**, tap one of the ten role-based examples (or paste your own text) and press **Check**. The full product documentation lives at [`/docs`](https://ciphermesh-console.vercel.app/docs). You can also call the API directly:
 
 ```bash
 curl -X POST https://ciphermesh-api.vercel.app/api/v1/inspect \
@@ -381,6 +415,7 @@ Base URL: `https://ciphermesh-api.vercel.app`. The full contract is in [`docs/AP
 | `GET` | `/api/v1/metrics` | Decision counts and latency | — |
 | `GET` | `/api/v1/providers` | Providers with negotiated prices | — |
 | `GET` | `/api/v1/graph` | Live LangGraph definition (Mermaid) | — |
+| `GET` | `/api/v1/threats/live` | Security-related AI incident headlines (AI Incident Database, cached 30 min) | — |
 
 **Error codes:**
 
@@ -446,7 +481,7 @@ Two independent reviewers audited the code: one for backend security, one for fr
 ## ✅ Testing
 
 ```bash
-cd backend  && python -m pytest          # 161 tests
+cd backend  && python -m pytest          # 167 tests
 cd frontend && npm run lint && npm run typecheck && npm run build
 ```
 

@@ -2,6 +2,7 @@ import { Check, MessageSquare, X } from "lucide-react";
 import type { Finding, ModelResponse, RouteResult, VaultInfo } from "@/lib/api";
 import { providerLabel } from "@/lib/api";
 import { categoryName, findingKind, KIND_LABEL } from "@/lib/friendly";
+import { Collapsible } from "./Collapsible";
 import { RedactedText } from "./RedactedText";
 import { EmptyState, KeyValue, StatusLabel, focusRing } from "./ui";
 
@@ -176,21 +177,22 @@ export function VaultDetails({ vault }: { vault: VaultInfo | null }) {
 
 export function ReplyCard({ response }: { response: ModelResponse }) {
   return (
-    <section aria-labelledby="reply-heading" className="surface rounded-2xl p-5">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 id="reply-heading" className="flex items-center gap-2 text-[17px] font-semibold tracking-tight">
-          <MessageSquare className="h-5 w-5 text-label-2" aria-hidden="true" />
-          AI Reply
-        </h2>
-        <span className="flex items-center gap-2 text-xs text-label-2">
+    <Collapsible
+      title="AI Reply"
+      icon={<MessageSquare className="h-5 w-5" aria-hidden="true" />}
+      meta={
+        <span className="flex items-center gap-2">
           from {providerLabel(response.provider)} · reply checked
           <StatusLabel decision={response.decision} />
         </span>
+      }
+    >
+      <div className="px-5 pb-5">
+        <p className="whitespace-pre-wrap break-words text-[15px] leading-relaxed text-label">
+          <RedactedText text={response.text} />
+        </p>
+        <p className="mt-3 text-[13px] text-label-2">This demo uses simulated cloud models, so replies are placeholders.</p>
       </div>
-      <p className="mt-3 whitespace-pre-wrap break-words text-[15px] leading-relaxed text-label">
-        <RedactedText text={response.text} />
-      </p>
-      <p className="mt-3 text-xs text-label-2">This demo uses simulated cloud models, so replies are placeholders.</p>
-    </section>
+    </Collapsible>
   );
 }

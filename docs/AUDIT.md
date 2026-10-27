@@ -85,3 +85,12 @@ The brand guidelines page was removed from the app and kept as an internal docum
 - Redaction sweep over the real values; neutral logo core that turns blue while a check runs.
 - Fixes from independent functional, accessibility and design reviews; full list and token table in [DESIGN_REVIEW.md](DESIGN_REVIEW.md#independent-audit-round-2-v23).
 - Verified: `tsc`, `next lint`, `next build`, 161 backend tests, Playwright regression (deny focus, tab keys, badge refresh, automatic appearance, wrong key, 404), axe-core, pixel contrast.
+
+## Product pass (v2.3): site, threat intelligence, docs
+
+- Landing page at `/`, console moved to `/check`; two shells (floating glass site navigation, console sidebar and tab bar).
+- `/threats`: 38 sourced AI incidents (2023 to October 2026) with filters and charts, plus `GET /api/v1/threats/live` (AI Incident Database RSS, security-filtered, cached, DTD-refusing parser).
+- `/architecture`: layers explorer, agent core, detection, routing with the live provider registry, check and approval lifecycles, vault, engineering foundations lit by a real request.
+- `/docs`: quickstart in three languages, concepts, API reference, auth, errors, configuration, security model, changelog.
+- Fixes: `/api/v1/graph` cache race; dark hover contrast; system-following theme with a single light/dark toggle; readable provider picker.
+- Verified: `tsc`, `next lint`, `next build`, 167 backend tests, Playwright flows, axe-core, pixel contrast. Details in [DESIGN_REVIEW.md](DESIGN_REVIEW.md#round-3-v23-product-site-threat-intelligence-documentation).

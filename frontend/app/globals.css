@@ -163,6 +163,7 @@
  * Accent (blue) means "action". Status colours appear only on status glyphs, words and redactions.
  */
 :root {
+  color-scheme: light;
   --canvas: 245 245 247;
   --surface: 255 255 255;
   --surface-2: 242 242 247;
@@ -188,18 +189,28 @@
   --destructive: 215 0 21;
   --destructive-hover: 180 0 18;
 
-  --glass: 252 252 253;
+  --glass: 255 255 255;
   --glass-a: 0.78;
   --glass-edge: rgb(255 255 255 / 0.65);
   --glass-hairline: rgb(0 0 0 / 0.08);
   --surface-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.06), 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px -12px rgb(0 0 0 / 0.08);
-  --lattice: rgb(0 0 0 / 0.055);
-  --glow: rgb(0 113 227 / 0.09);
+  --dot: rgb(0 0 0 / 0.07);
+  --v1: #2a78d6;
+  --v2: #eb6834;
+  --v3: #1baf7a;
+  --v4: #eda100;
+  --v5: #e87ba4;
+  --v6: #008300;
+  --v7: #6250d6;
+  --glow: rgb(255 255 255 / 0.9);
+  --streak: rgb(0 113 227 / 0.16);
+  --streak-core: rgb(0 113 227 / 0.38);
   --redaction: 29 29 31;
   --on-redaction: 255 255 255;
 }
 
 :root.dark {
+  color-scheme: dark;
   --canvas: 0 0 0;
   --surface: 28 28 30;
   --surface-2: 44 44 46;
@@ -211,7 +222,7 @@
   --fill-2: rgb(118 118 128 / 0.16);
 
   --accent: 0 113 227;
-  --accent-hover: 0 125 250;
+  --accent-hover: 0 98 205;
   --accent-text: 92 172 255;
 
   --allow: 48 209 88;
@@ -230,8 +241,17 @@
   --glass-edge: rgb(255 255 255 / 0.09);
   --glass-hairline: rgb(0 0 0 / 0.5);
   --surface-shadow: 0 0 0 0.5px rgb(255 255 255 / 0.06), 0 8px 24px -12px rgb(0 0 0 / 0.8);
-  --lattice: rgb(255 255 255 / 0.05);
-  --glow: rgb(40 110 255 / 0.16);
+  --dot: rgb(255 255 255 / 0.07);
+  --v1: #3987e5;
+  --v2: #d95926;
+  --v3: #199e70;
+  --v4: #c98500;
+  --v5: #d55181;
+  --v6: #008300;
+  --v7: #9085e9;
+  --glow: rgb(60 110 255 / 0.13);
+  --streak: rgb(120 160 255 / 0.22);
+  --streak-core: rgb(210 225 255 / 0.7);
   --redaction: 72 72 74;
   --on-redaction: 245 245 247;
 }
@@ -266,30 +286,86 @@ body {
 }
 
 /*
- * Canvas: the product's own material. A faint hexagonal mesh (the logo's geometry) and one cool
- * highlight, both fading out below the fold, so the floating glass has something to refract.
+ * Canvas: a neutral field (no tint in Light) with a faint dot grid, one soft overhead light and a
+ * few hair-thin streaks that drift across, so the floating glass has something alive to refract.
  */
-.canvas {
+.backdrop {
   position: fixed;
   inset: 0;
   z-index: -1;
+  overflow: hidden;
   pointer-events: none;
-  background:
-    radial-gradient(60rem 36rem at 50% -8%, var(--glow), transparent 70%),
-    rgb(var(--canvas));
+  background: rgb(var(--canvas));
+  contain: strict;
 }
-.canvas::before {
-  content: "";
+.backdrop-dots {
   position: absolute;
   inset: 0;
-  background-color: var(--lattice);
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 27.71 48'%3E%3Cpath d='M13.86 0 27.71 8v16l-13.85 8L0 24V8zM13.86 32v16' fill='none' stroke='%23000' stroke-width='.55'/%3E%3C/svg%3E") 0 0 / 41.6px 72px,
-    radial-gradient(70rem 40rem at 50% 0%, #000 0%, transparent 75%);
-  -webkit-mask-composite: source-in;
-  mask:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 27.71 48'%3E%3Cpath d='M13.86 0 27.71 8v16l-13.85 8L0 24V8zM13.86 32v16' fill='none' stroke='%23000' stroke-width='.55'/%3E%3C/svg%3E") 0 0 / 41.6px 72px,
-    radial-gradient(70rem 40rem at 50% 0%, #000 0%, transparent 75%);
-  mask-composite: intersect;
+  background-image: radial-gradient(var(--dot) 1px, transparent 1.2px);
+  background-size: 28px 28px;
+  -webkit-mask-image: radial-gradient(80rem 46rem at 50% 0%, #000 0%, transparent 78%);
+  mask-image: radial-gradient(80rem 46rem at 50% 0%, #000 0%, transparent 78%);
+}
+.backdrop-glow {
+  position: absolute;
+  inset: -20% -10% auto;
+  height: 70vh;
+  background: radial-gradient(50% 60% at 50% 0%, var(--glow), transparent 70%);
+}
+.backdrop-streaks {
+  position: absolute;
+  inset: -10%;
+  transform: rotate(-14deg);
+}
+.streak {
+  position: absolute;
+  left: 0;
+  height: 1px;
+  border-radius: 1px;
+  background: linear-gradient(90deg, transparent, var(--streak) 45%, var(--streak-core) 50%, var(--streak) 55%, transparent);
+  box-shadow: 0 0 12px 1px var(--streak);
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: streak-drift linear infinite;
+}
+@keyframes streak-drift {
+  0% {
+    transform: translateX(-50vw);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(140vw);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .backdrop-streaks {
+    display: none;
+  }
+}
+
+/* Collapsible cards: the content folds on a grid track so height animates without measuring. */
+.fold {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 420ms cubic-bezier(0.32, 0.72, 0, 1), opacity 260ms ease;
+}
+.fold[data-open="false"] {
+  grid-template-rows: 0fr;
+  opacity: 0;
+}
+.fold > * {
+  min-height: 0;
+  overflow: hidden;
+}
+.fold-mark {
+  transition: transform 700ms cubic-bezier(0.34, 1.2, 0.64, 1);
 }
 
 @layer components {
@@ -566,5 +642,56 @@ mark.finding {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* Native menus inherit the appearance, so their option lists are always readable. */
+select option {
+  background-color: rgb(var(--surface));
+  color: rgb(var(--label));
+}
+
+/* Direction-of-flow cues on diagrams: one packet travelling a line, or dashes marching along it. */
+.flow-packet {
+  left: 0;
+  animation: flow-packet 3.6s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+@keyframes flow-packet {
+  0% {
+    left: 0;
+    opacity: 0;
+  }
+  10%,
+  90% {
+    opacity: 1;
+  }
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
+}
+.flow-line {
+  background-image: linear-gradient(90deg, rgb(var(--accent) / 0.7) 50%, transparent 50%);
+  background-size: 10px 2px;
+  animation: flow-dash 1.2s linear infinite;
+}
+.flow-line-v {
+  background-image: linear-gradient(180deg, rgb(var(--accent) / 0.7) 50%, transparent 50%);
+  background-size: 2px 10px;
+  animation: flow-dash-v 1.2s linear infinite;
+}
+@keyframes flow-dash {
+  to {
+    background-position: 10px 0;
+  }
+}
+@keyframes flow-dash-v {
+  to {
+    background-position: 0 10px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .flow-packet {
+    display: none;
   }
 }

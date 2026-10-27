@@ -155,3 +155,20 @@ class GraphOut(BaseModel):
 class ErrorOut(BaseModel):
     detail: str
     request_id: str | None = None
+
+
+class ThreatItem(BaseModel):
+    title: str
+    link: str
+    published: str | None = None
+    summary: str = ""
+
+
+class ThreatFeedOut(BaseModel):
+    available: bool
+    source: str
+    source_url: str
+    fetched_at: str | None = None
+    cached: bool = False
+    stale: bool = False
+    items: list[ThreatItem] = Field(default_factory=list)

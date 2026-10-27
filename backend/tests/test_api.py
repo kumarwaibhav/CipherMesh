@@ -150,3 +150,14 @@ def test_limiter_lru_cap():
     for k in "abcd":
         limiter.allow(k)
     assert list(limiter._hits) == ["b", "c", "d"]
+
+
+def test_graph_endpoint_is_safe_under_concurrent_first_requests(client):
+    from concurrent.futures import ThreadPoolExecutor
+
+    from app.api import routes
+
+    routes._GRAPH_CACHE.clear()
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        codes = list(pool.map(lambda _: client.get("/api/v1/graph").status_code, range(16)))
+    assert codes == [200] * 16

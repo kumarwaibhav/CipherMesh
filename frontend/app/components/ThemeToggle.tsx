@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Monitor, Moon, Sun } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 import { THEME_STORAGE_KEY, type ThemePreference } from "@/lib/theme";
 import { focusRing } from "./ui";
 
@@ -68,35 +68,31 @@ export function useThemePreference(): [ThemePreference | null, (next: ThemePrefe
   return [pref, choose];
 }
 
-export const THEME_OPTIONS: Array<{ value: ThemePreference; label: string; short: string; Icon: typeof Sun }> = [
-  { value: "light", label: "Light appearance", short: "Light", Icon: Sun },
-  { value: "dark", label: "Dark appearance", short: "Dark", Icon: Moon },
-  { value: "system", label: "Match my device", short: "Automatic", Icon: Monitor },
-];
-
-export function ThemeToggle({ withLabels = false, className = "" }: { withLabels?: boolean; className?: string }) {
+/**
+ * One control: the app starts in the device's appearance (dark when it can't tell), and this button
+ * switches between Light and Dark. The choice is remembered on this device.
+ */
+export function ThemeToggle({ className = "" }: { className?: string }) {
   const [pref, choose] = useThemePreference();
+  const [dark, setDark] = useState(true);
+  useEffect(() => {
+    setDark(document.documentElement.classList.contains("dark"));
+  }, [pref]);
+  const next = dark ? "light" : "dark";
+  const label = dark ? "Switch to Light Appearance" : "Switch to Dark Appearance";
   return (
-    <div role="group" aria-label="Appearance" className={`fill flex items-center gap-0.5 rounded-[10px] p-0.5 ${className}`}>
-      {THEME_OPTIONS.map(({ value, label, short, Icon }) => {
-        const active = pref === value;
-        return (
-          <button
-            key={value}
-            type="button"
-            onClick={() => choose(value)}
-            aria-pressed={active}
-            aria-label={withLabels ? undefined : label}
-            title={label}
-            className={`inline-flex h-11 items-center justify-center gap-1.5 rounded-[8px] text-[13px] transition sm:h-9 ${focusRing} ${
-              withLabels ? "flex-1 px-3" : "w-9"
-            } ${active ? "bg-[rgb(var(--surface))] font-semibold text-label shadow-surface ring-1 ring-[rgb(var(--label)/0.12)]" : "font-medium text-label-2 hover:text-label"}`}
-          >
-            <Icon className="h-4 w-4" aria-hidden="true" />
-            {withLabels ? short : null}
-          </button>
-        );
-      })}
-    </div>
+    <button
+      type="button"
+      onClick={() => {
+        choose(next);
+        setDark(!dark);
+      }}
+      aria-label={label}
+      title={label}
+      className={`group relative inline-flex h-11 w-11 items-center justify-center rounded-full text-label-2 transition-colors hover:bg-[var(--fill-2)] hover:text-label lg:h-9 lg:w-9 ${focusRing} ${className}`}
+    >
+      <Sun className={`absolute h-[18px] w-[18px] transition-all duration-500 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] ${dark ? "rotate-90 scale-50 opacity-0" : "rotate-0 scale-100 opacity-100"}`} aria-hidden="true" />
+      <Moon className={`absolute h-[18px] w-[18px] transition-all duration-500 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] ${dark ? "rotate-0 scale-100 opacity-100" : "-rotate-90 scale-50 opacity-0"}`} aria-hidden="true" />
+    </button>
   );
 }

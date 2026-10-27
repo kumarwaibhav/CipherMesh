@@ -69,7 +69,7 @@ export function Activity() {
         {history.length === 0 ? (
           <div className="surface flex flex-col items-start gap-3 rounded-2xl p-5">
             <p className="text-[15px] text-label-2">Nothing yet. Prompts you check appear here; the original text is never kept.</p>
-            <Link href="/" className={`${buttonPrimary} ${focusRing}`}>
+            <Link href="/check" className={`${buttonPrimary} ${focusRing}`}>
               Check a Prompt
             </Link>
           </div>

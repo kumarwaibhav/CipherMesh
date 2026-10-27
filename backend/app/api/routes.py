@@ -11,8 +11,9 @@ from ciphermesh.review import ReviewError, ReviewStatus
 from app.agents.graph import initial_state, orchestrator_graph, public_response_decision
 from app.agents.services import get_services
 from app.api.deps import rate_limit, require_reviewer, require_token
+from app.api import threat_feed
 from app.api.schemas import (GraphOut, HealthOut, InspectRequest, InspectResponse, MetricsOut, ProviderOut,
-                             ReviewDecisionRequest, ReviewOut)
+                             ReviewDecisionRequest, ReviewOut, ThreatFeedOut)
 from app.core.security import VaultSecurity
 
 router = APIRouter(prefix="/api/v1", tags=["ciphermesh"], dependencies=[Depends(rate_limit)])
@@ -131,12 +132,19 @@ def metrics() -> MetricsOut:
 @router.get("/graph", response_model=GraphOut)
 def graph() -> GraphOut:
     compiled = orchestrator_graph._get()
-    if _GRAPH_CACHE.get("graph") is not compiled:
+    cached = _GRAPH_CACHE.get("entry")
+    if cached is None or cached[0] is not compiled:
         g = compiled.get_graph()
-        _GRAPH_CACHE["graph"] = compiled
-        _GRAPH_CACHE["out"] = GraphOut(mermaid=g.draw_mermaid(), nodes=[n for n in g.nodes],
-                                       edges=[[e.source, e.target] for e in g.edges])
-    return _GRAPH_CACHE["out"]
+        out = GraphOut(mermaid=g.draw_mermaid(), nodes=[n for n in g.nodes], edges=[[e.source, e.target] for e in g.edges])
+        cached = (compiled, out)
+        _GRAPH_CACHE["entry"] = cached  # one atomic swap: concurrent readers never see half an entry
+    return cached[1]
 
 
-_GRAPH_CACHE: dict[str, object] = {}
+_GRAPH_CACHE: dict[str, tuple] = {}
+
+
+@router.get("/threats/live", response_model=ThreatFeedOut)
+def threats_live() -> ThreatFeedOut:
+    """Security-relevant AI incident headlines from the AI Incident Database (cached 30 min, fails soft)."""
+    return ThreatFeedOut(**threat_feed.get_live())

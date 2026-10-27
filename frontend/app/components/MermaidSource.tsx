@@ -43,19 +43,15 @@ export function MermaidSource() {
   }, [load]);
 
   return (
-    <section aria-labelledby="mermaid-heading" className="flex flex-col gap-1 p-2">
+    <div className="flex flex-col gap-1">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h3 id="mermaid-heading" className="text-[15px] font-semibold">
-          Live Agent Graph
-        </h3>
+        <p className="text-[13px] text-label-2">
+          Served by <code className="font-mono text-label">GET /api/v1/graph</code>, generated from the compiled graph at runtime.
+        </p>
         <button type="button" onClick={() => void load()} className={`${buttonPlain} ${focusRing}`}>
           <RefreshCw className="h-4 w-4" aria-hidden="true" /> Reload
         </button>
       </div>
-      <p className="mb-3 text-[13px] text-label-2">
-        Mermaid source served by <code className="font-mono text-label">GET /api/v1/graph</code>, generated from the
-        compiled graph at runtime.
-      </p>
       {error ? <ErrorBanner message={error} /> : null}
       {loading && !graph ? (
         <p className="flex items-center gap-2 text-sm text-label-2">
@@ -77,6 +73,6 @@ export function MermaidSource() {
           </p>
         </div>
       ) : null}
-    </section>
+    </div>
   );
 }

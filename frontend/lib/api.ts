@@ -145,6 +145,16 @@ export interface MetricsResponse {
   p95_latency_ms: number;
 }
 
+export interface ThreatFeed {
+  available: boolean;
+  source: string;
+  source_url: string;
+  fetched_at: string | null;
+  cached: boolean;
+  stale: boolean;
+  items: Array<{ title: string; link: string; published: string | null; summary: string }>;
+}
+
 export interface GraphResponse {
   mermaid: string;
   nodes: string[];
@@ -397,4 +407,5 @@ export const api = {
     }),
   metrics: (signal?: AbortSignal) => request<MetricsResponse>("/api/v1/metrics", { signal }),
   graph: (signal?: AbortSignal) => request<GraphResponse>("/api/v1/graph", { signal }),
+  threatsLive: (signal?: AbortSignal) => request<ThreatFeed>("/api/v1/threats/live", { signal }),
 };

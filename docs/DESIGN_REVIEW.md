@@ -111,3 +111,18 @@ Three reviewers who had not seen the work being built tested the running app: fu
 | Design | Centred sheets and three ways out on phones | Bottom sheet with grabber and swipe-down; one way out |
 
 After the fixes: axe reports no violations other than one example button partly under the tab bar at one scroll position; the pixel sampler measures 7,967 text runs and finds no failures in the sidebar, top bar, tab bar or sheets; the only near-misses are text passing under the deliberate scroll-edge fade at the bottom of a phone screen.
+
+## Round 3 (v2.3): product site, threat intelligence, documentation
+
+New surfaces were checked the same way: functional Playwright flows on every page at 320, 390 and 1440 px in both appearances; axe-core (WCAG 2.2 AA and best practice) on eight routes in both appearances and two widths; and the pixel contrast sampler over 15,470 text runs on the landing page, threat dashboard, architecture page, docs and console.
+
+| Area | Result |
+|:--|:--|
+| Horizontal overflow | 0 px on every route at 320, 390 and 1440 |
+| axe-core | 0 violations after one fix (an interactive chart nested inside an image role) |
+| Pixel contrast | 1 real failure fixed (dark-mode hover blue under white text, now 5.8:1); 1 false positive (text under the glass navigation bar) |
+| Console errors | none |
+| Flows | ten role examples give the intended decisions; collapsibles, provider picker keyboard, theme toggle persistence, dashboard filters, live feed, live foundations run, docs tabs and mobile menu all pass |
+| Chart palette | Seven categorical slots validated for colour-vision deficiency in both appearances (worst adjacent ΔE 9.1 light, 8.4 dark); light-mode relief provided by legends, labels and the incident list as the table view |
+
+One real backend defect surfaced while testing: two simultaneous first requests to `/api/v1/graph` could read a half-written cache entry and return 500. The cache now swaps in one atomic step, with a concurrency test.

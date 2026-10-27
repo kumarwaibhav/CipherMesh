@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
-import { Check, ChevronRight, Copy, Inbox, PenLine, RotateCcw, ShieldCheck } from "lucide-react";
+import { Check, Copy, Cpu, FileText, Inbox, PenLine, RotateCcw, ShieldCheck } from "lucide-react";
 import type { ActionDecision, Finding, InspectResponse } from "@/lib/api";
 import { categoryName, findingKind, KIND_DECISION, verdictCopy } from "@/lib/friendly";
 import type { TraceRun } from "@/lib/session";
 import { FindingsDetails, RoutingDetails, VaultDetails } from "./ResultPanels";
 import { TelemetryTerminal } from "./TelemetryTerminal";
+import { Collapsible } from "./Collapsible";
 import { STATUS, buttonPlain, buttonPrimary, focusRing } from "./ui";
 
 async function copyText(text: string): Promise<boolean> {
@@ -240,11 +241,12 @@ export function PromptDocument({ original, result }: { original: string | null; 
     : [{ id: "sent", label: "What the AI Receives" }];
 
   return (
-    <section aria-labelledby={`${groupId}-h`} className="surface rounded-2xl">
-      <div className="flex flex-wrap items-center justify-between gap-3 px-5 pt-4">
-        <h2 id={`${groupId}-h`} className="sr-only">
-          Your prompt
-        </h2>
+    <Collapsible
+      title="Your Prompt"
+      icon={<FileText className="h-5 w-5" aria-hidden="true" />}
+      meta={approvedLocal ? "Approved by a reviewer" : findings.length === 0 ? "Nothing needed changing" : `${findings.length} found`}
+    >
+      <div className="flex flex-wrap items-center justify-between gap-3 px-5">
         {options.length > 1 ? (
           <div role="tablist" aria-label="Show" className="fill flex rounded-[10px] p-0.5">
             {options.map((o) => (
@@ -277,7 +279,7 @@ export function PromptDocument({ original, result }: { original: string | null; 
         ) : (
           <p className="text-[15px] font-semibold">What the AI Receives</p>
         )}
-        <p className="text-[13px] text-label-2">
+        <p className="text-[13px] text-label-2 sm:hidden">
           {approvedLocal ? "Approved by a reviewer" : findings.length === 0 ? "Nothing needed changing" : `${findings.length} found`}
         </p>
       </div>
@@ -303,7 +305,7 @@ export function PromptDocument({ original, result }: { original: string | null; 
         )}
 
       </div>
-    </section>
+    </Collapsible>
   );
 }
 
@@ -321,12 +323,12 @@ export function Details({ result, runs }: { result: InspectResponse; runs: Trace
   const active = visible.some((t) => t.id === tab) ? tab : visible[0].id;
 
   return (
-    <details className="surface group rounded-2xl">
-      <summary className={`flex min-h-[52px] cursor-pointer list-none items-center gap-3 rounded-2xl px-5 py-3 ${focusRing} [&::-webkit-details-marker]:hidden`}>
-        <ChevronRight className="h-4 w-4 shrink-0 text-label-2 transition-transform duration-200 group-open:rotate-90" aria-hidden="true" />
-        <span className="flex-1 text-[15px] font-semibold">Technical Details</span>
-        <span className="hidden text-[13px] text-label-2 sm:inline">Model Choice · Log · Encryption · Rules</span>
-      </summary>
+    <Collapsible
+      title="Technical Details"
+      icon={<Cpu className="h-5 w-5" aria-hidden="true" />}
+      meta="Model Choice · Log · Encryption · Rules"
+      defaultOpen={false}
+    >
       <div className="sep flex flex-col gap-4 border-t px-5 pb-5 pt-4">
         <div role="tablist" aria-label="Technical details" className="fill flex flex-wrap gap-0.5 self-start rounded-[10px] p-0.5">
           {visible.map((t) => (
@@ -355,7 +357,7 @@ export function Details({ result, runs }: { result: InspectResponse; runs: Trace
           {active === "findings" ? <FindingsDetails findings={Array.isArray(result.findings) ? result.findings : []} /> : null}
         </div>
       </div>
-    </details>
+    </Collapsible>
   );
 }
 
