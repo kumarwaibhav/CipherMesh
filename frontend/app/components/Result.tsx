@@ -1,21 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import { Ban, Check, CheckCircle2, ChevronDown, Clock, Copy, EyeOff, Inbox, PenLine, RotateCcw, ShieldCheck } from "lucide-react";
+import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
+import { Check, ChevronRight, Copy, Inbox, PenLine, RotateCcw, ShieldCheck } from "lucide-react";
 import type { ActionDecision, Finding, InspectResponse } from "@/lib/api";
 import { categoryName, findingKind, KIND_DECISION, verdictCopy } from "@/lib/friendly";
-import { RedactedText } from "./RedactedText";
-import { FindingsDetails, ReplyCard, RoutingDetails, VaultDetails } from "./ResultPanels";
-import { TelemetryTerminal, type TraceRun } from "./TelemetryTerminal";
-import { DECISION_STYLES, buttonPrimary, buttonSecondary, focusRing } from "./ui";
-
-const ICON: Record<ActionDecision, typeof Check> = {
-  ALLOW: CheckCircle2,
-  REDACT: EyeOff,
-  REVIEW: Clock,
-  BLOCK: Ban,
-};
+import type { TraceRun } from "@/lib/session";
+import { FindingsDetails, RoutingDetails, VaultDetails } from "./ResultPanels";
+import { TelemetryTerminal } from "./TelemetryTerminal";
+import { STATUS, buttonPlain, buttonPrimary, focusRing } from "./ui";
 
 async function copyText(text: string): Promise<boolean> {
   try {
@@ -26,27 +19,52 @@ async function copyText(text: string): Promise<boolean> {
   } catch {
     /* fall through */
   }
-  return false;
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand("copy");
+    ta.remove();
+    return ok;
+  } catch {
+    return false;
+  }
 }
 
+/** Arrow keys, Home and End move between tabs, as in a native segmented control. */
+function tabKeys<T extends string>(e: KeyboardEvent<HTMLButtonElement>, ids: T[], current: T, set: (id: T) => void, prefix: string) {
+  const i = ids.indexOf(current);
+  const next =
+    e.key === "ArrowRight" ? ids[(i + 1) % ids.length] : e.key === "ArrowLeft" ? ids[(i - 1 + ids.length) % ids.length] : e.key === "Home" ? ids[0] : e.key === "End" ? ids[ids.length - 1] : null;
+  if (!next) return;
+  e.preventDefault();
+  set(next);
+  document.getElementById(`${prefix}-${next}`)?.focus();
+}
+
+/** The answer: one status glyph, a plain headline, one sentence, one next step, one primary action. */
 export function Verdict({
   result,
   onEdit,
   onReset,
   showApprovalsLink = true,
+  resetLabel = "Check Another",
 }: {
   result: InspectResponse;
   onEdit?: () => void;
   onReset?: () => void;
   showApprovalsLink?: boolean;
+  resetLabel?: string;
 }) {
   const copy = verdictCopy(result);
-  const style = DECISION_STYLES[copy.tone];
-  const Icon = ICON[copy.tone];
+  const s = STATUS[copy.tone];
   const [copied, setCopied] = useState<"idle" | "ok" | "fail">("idle");
   const headingRef = useRef<HTMLHeadingElement>(null);
 
-  // Move focus to the answer so keyboard and screen-reader users land on it.
   useEffect(() => {
     headingRef.current?.focus({ preventScroll: true });
   }, [result.request_id, result.status]);
@@ -57,77 +75,66 @@ export function Verdict({
     return () => window.clearTimeout(id);
   }, [copied]);
 
-  const cleanText = result.processed_prompt;
+  const clean = result.processed_prompt;
   const waiting = result.action_decision === "REVIEW" && result.status === "PENDING_REVIEW";
+  const primary =
+    waiting && showApprovalsLink ? (
+      <Link href="/approvals" className={`${buttonPrimary} ${focusRing}`}>
+        <Inbox className="h-4 w-4" aria-hidden="true" />
+        Open Approvals
+      </Link>
+    ) : result.action_decision === "REDACT" && clean ? (
+      <button type="button" onClick={async () => setCopied((await copyText(clean)) ? "ok" : "fail")} className={`${buttonPrimary} ${focusRing}`}>
+        {copied === "ok" ? <Check className="h-4 w-4" aria-hidden="true" /> : <Copy className="h-4 w-4" aria-hidden="true" />}
+        {copied === "ok" ? "Copied" : copied === "fail" ? "Copying isn’t allowed here" : "Copy Cleaned Text"}
+      </button>
+    ) : result.action_decision === "BLOCK" && onEdit ? (
+      <button type="button" onClick={onEdit} className={`${buttonPrimary} ${focusRing}`}>
+        <PenLine className="h-4 w-4" aria-hidden="true" />
+        Edit My Text
+      </button>
+    ) : null;
 
   return (
-    <section aria-labelledby="verdict-heading" className={`glass animate-fade-in rounded-[28px] border ${style.card} p-6 sm:p-7`}>
-      <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
-        <span className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ${style.icon} shadow-lg`}>
-          <Icon className="h-7 w-7" aria-hidden="true" />
-        </span>
-        <div className="min-w-0 flex-1">
-          <h2
-            id="verdict-heading"
-            ref={headingRef}
-            tabIndex={-1}
-            className="text-2xl font-semibold tracking-tight text-label focus:outline-none sm:text-[28px]"
-          >
+    <section aria-labelledby="verdict-heading" className="surface animate-rise rounded-2xl">
+      <div className="flex flex-col gap-4 p-5 sm:p-6">
+        <p className={`flex items-center gap-1.5 text-[15px] font-semibold ${s.text}`}>
+          <s.Icon className="h-[18px] w-[18px]" aria-hidden="true" />
+          {s.word}
+        </p>
+        <div>
+          <h2 id="verdict-heading" ref={headingRef} tabIndex={-1} className="text-[22px] font-bold leading-tight tracking-[-0.02em] focus:outline-none sm:text-[26px]">
             {copy.headline}
           </h2>
-          <p className="mt-2 text-[17px] leading-relaxed text-label">{copy.body}</p>
-          <p className={`mt-3 flex items-start gap-2 text-[15px] font-medium ${style.text}`}>
-            <span aria-hidden="true">→</span>
-            <span>
-              <span className="sr-only">Next step: </span>
-              {copy.next}
-            </span>
+          <p className="mt-2 max-w-[62ch] text-[17px] leading-relaxed text-label">{copy.body}</p>
+          <p className="mt-2 max-w-[62ch] text-[15px] leading-relaxed text-label-2">
+            <span className="sr-only">Next step: </span>
+            {copy.next}
           </p>
-
-          <div className="mt-5 flex flex-wrap items-center gap-2.5">
-            {waiting && showApprovalsLink ? (
-              <Link href="/approvals" className={`${buttonPrimary} ${focusRing}`}>
-                <Inbox className="h-4 w-4" aria-hidden="true" />
-                Open Approvals
-              </Link>
-            ) : null}
-            {result.action_decision === "REDACT" && cleanText ? (
-              <button
-                type="button"
-                onClick={async () => setCopied((await copyText(cleanText)) ? "ok" : "fail")}
-                className={`${buttonPrimary} ${focusRing}`}
-              >
-                {copied === "ok" ? <Check className="h-4 w-4" aria-hidden="true" /> : <Copy className="h-4 w-4" aria-hidden="true" />}
-                {copied === "ok" ? "Copied" : copied === "fail" ? "Copy not allowed here" : "Copy cleaned text"}
-              </button>
-            ) : null}
-            {result.action_decision === "BLOCK" && onEdit ? (
-              <button type="button" onClick={onEdit} className={`${buttonPrimary} ${focusRing}`}>
-                <PenLine className="h-4 w-4" aria-hidden="true" />
-                Edit my text
-              </button>
-            ) : null}
+        </div>
+        {primary || onReset ? (
+          <div className="flex flex-wrap items-center gap-2">
+            {primary}
             {onReset ? (
-              <button type="button" onClick={onReset} className={`${buttonSecondary} ${focusRing}`}>
-                <RotateCcw className="h-4 w-4" aria-hidden="true" />
-                Check another
+              <button type="button" onClick={onReset} className={`${buttonPlain} ${focusRing}`}>
+                {resetLabel === "Check Another" ? <RotateCcw className="h-4 w-4" aria-hidden="true" /> : null}
+                {resetLabel}
               </button>
             ) : null}
           </div>
-        </div>
+        ) : null}
       </div>
     </section>
   );
 }
 
-const MARK_STYLE: Record<ActionDecision, string> = {
-  ALLOW: "bg-allow/20",
-  REDACT: "bg-redact/25 ring-1 ring-redact/40",
-  REVIEW: "bg-review/20 ring-1 ring-review/40",
-  BLOCK: "bg-block/20 ring-1 ring-block/45",
+const UNDERLINE: Record<ActionDecision, string> = {
+  ALLOW: "decoration-allow",
+  REDACT: "decoration-redact",
+  REVIEW: "decoration-review",
+  BLOCK: "decoration-block",
 };
 
-/** The user's own text with every detected value highlighted and named. */
 function MarkedText({ text, findings }: { text: string; findings: Finding[] }) {
   const sorted = [...findings].filter((f) => f.end > f.start && f.start >= 0 && f.end <= text.length).sort((a, b) => a.start - b.start);
   const parts: Array<{ text: string; f?: Finding }> = [];
@@ -143,7 +150,7 @@ function MarkedText({ text, findings }: { text: string; findings: Finding[] }) {
     <>
       {parts.map((p, i) =>
         p.f ? (
-          <mark key={i} className={`finding ${MARK_STYLE[KIND_DECISION[findingKind(p.f)]]}`} title={categoryName(p.f.category)}>
+          <mark key={i} className={`finding ${UNDERLINE[KIND_DECISION[findingKind(p.f)]]}`} title={categoryName(p.f.category)}>
             {p.text}
             <span className="sr-only"> (found: {categoryName(p.f.category)})</span>
           </mark>
@@ -155,72 +162,146 @@ function MarkedText({ text, findings }: { text: string; findings: Finding[] }) {
   );
 }
 
-const CHIP: Record<ActionDecision, { cls: string; action: string }> = {
-  ALLOW: { cls: "bg-allow/15 text-allow-text", action: "ok" },
-  REDACT: { cls: "bg-redact/15 text-redact-text", action: "hidden" },
-  REVIEW: { cls: "bg-review/15 text-review-text", action: "needs approval" },
-  BLOCK: { cls: "bg-block/15 text-block-text", action: "stopped" },
-};
+const TOKEN_RE = /\[REDACTED:[^\]\s]+\]/g;
 
-export function Comparison({ original, result }: { original: string | null; result: InspectResponse }) {
+/**
+ * The signature: each private value is shown for a beat, a redaction bar sweeps across exactly that
+ * value, and the bar is labelled with what it hides. The bar keeps the width of what it covers.
+ */
+function SealedText({ text, sweep, originals }: { text: string; sweep: boolean; originals: Map<string, string[]> | null }) {
+  const parts: Array<{ token: boolean; value: string }> = [];
+  let last = 0;
+  for (const m of text.matchAll(TOKEN_RE)) {
+    const idx = m.index ?? 0;
+    if (idx > last) parts.push({ token: false, value: text.slice(last, idx) });
+    parts.push({ token: true, value: m[0] });
+    last = idx + m[0].length;
+  }
+  if (last < text.length) parts.push({ token: false, value: text.slice(last) });
+  const queues = new Map<string, string[]>();
+  originals?.forEach((v, k) => queues.set(k, [...v]));
+  let n = 0;
+  return (
+    <>
+      {parts.map((p, i) => {
+        if (!p.token) return <span key={i}>{p.value}</span>;
+        const key = p.value.slice(10, -1).toLowerCase();
+        const name = categoryName(key);
+        const orig = queues.get(key)?.shift();
+        const delay = 260 + n++ * 180;
+        return (
+          <span key={i} className="redaction" data-sweep={sweep} style={{ ["--delay" as string]: `${delay}ms` }} title={p.value}>
+            {orig ? (
+              <span className="redaction-orig" aria-hidden="true">
+                {orig}
+              </span>
+            ) : null}
+            <span className="redaction-label">{name} hidden</span>
+            <span className="sr-only"> ({p.value})</span>
+          </span>
+        );
+      })}
+    </>
+  );
+}
+
+type View = "sent" | "original";
+
+export function PromptDocument({ original, result }: { original: string | null; result: InspectResponse }) {
   const findings = Array.isArray(result.findings) ? result.findings : [];
   const copy = verdictCopy(result);
-  const chips = new Map<string, ActionDecision>();
-  for (const f of findings) chips.set(categoryName(f.category), KIND_DECISION[findingKind(f)]);
+  const approvedLocal = result.action_decision === "REVIEW" && result.status === "COMPLETED";
+  const [view, setView] = useState<View>("sent");
+  const [sweep, setSweep] = useState(true);
+  const groupId = useId();
+
+  // The sweep plays once per result; switching views afterwards shows the finished state.
+  useEffect(() => {
+    setView("sent");
+    setSweep(true);
+    const id = window.setTimeout(() => setSweep(false), 4000);
+    return () => window.clearTimeout(id);
+  }, [result.request_id, result.status]);
+
+  const originals = new Map<string, string[]>();
+  if (original) {
+    for (const f of [...findings].sort((a, b) => a.start - b.start)) {
+      if (f.start < 0 || f.end > original.length || f.end <= f.start) continue;
+      const key = f.category.toLowerCase();
+      originals.set(key, [...(originals.get(key) ?? []), original.slice(f.start, f.end)]);
+    }
+  }
+
+  const options: Array<{ id: View; label: string }> = original
+    ? [
+        { id: "sent", label: "What the AI Receives" },
+        { id: "original", label: "What You Wrote" },
+      ]
+    : [{ id: "sent", label: "What the AI Receives" }];
 
   return (
-    <section aria-labelledby="compare-heading" className="glass rounded-3xl p-5 sm:p-6">
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h2 id="compare-heading" className="text-[17px] font-semibold tracking-tight">
-          What the AI receives
+    <section aria-labelledby={`${groupId}-h`} className="surface rounded-2xl">
+      <div className="flex flex-wrap items-center justify-between gap-3 px-5 pt-4">
+        <h2 id={`${groupId}-h`} className="sr-only">
+          Your prompt
         </h2>
-        <p className="text-sm text-label-2">
-          {result.action_decision === "REVIEW" && result.status === "COMPLETED"
-            ? "Approved by a reviewer"
-            : findings.length === 0
-              ? "Nothing needed changing"
-              : `Found ${findings.length} item${findings.length === 1 ? "" : "s"}`}
+        {options.length > 1 ? (
+          <div role="tablist" aria-label="Show" className="fill flex rounded-[10px] p-0.5">
+            {options.map((o) => (
+              <button
+                key={o.id}
+                id={`${groupId}-tab-${o.id}`}
+                role="tab"
+                type="button"
+                aria-selected={view === o.id}
+                aria-controls={`${groupId}-panel`}
+                tabIndex={view === o.id ? 0 : -1}
+                onKeyDown={(e) =>
+                  tabKeys(e, options.map((x) => x.id), view, (id) => {
+                    setSweep(false);
+                    setView(id);
+                  }, `${groupId}-tab`)
+                }
+                onClick={() => {
+                  setSweep(false);
+                  setView(o.id);
+                }}
+                className={`h-10 rounded-[8px] px-3 text-[13px] transition sm:h-8 ${focusRing} ${
+                  view === o.id ? "bg-[rgb(var(--surface))] font-semibold text-label shadow-surface ring-1 ring-[rgb(var(--label)/0.12)]" : "font-medium text-label-2 hover:text-label"
+                }`}
+              >
+                {o.label}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <p className="text-[15px] font-semibold">What the AI Receives</p>
+        )}
+        <p className="text-[13px] text-label-2">
+          {approvedLocal ? "Approved by a reviewer" : findings.length === 0 ? "Nothing needed changing" : `${findings.length} found`}
         </p>
       </div>
 
-      {chips.size > 0 ? (
-        <ul className="mt-3 flex flex-wrap gap-2" aria-label="What CipherMesh found">
-          {[...chips.entries()].map(([name, d]) => (
-            <li key={name} className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[13px] font-semibold ${CHIP[d].cls}`}>
-              <span className={`h-1.5 w-1.5 rounded-full ${DECISION_STYLES[d].dot}`} aria-hidden="true" />
-              {name} · {CHIP[d].action}
-            </li>
-          ))}
-        </ul>
-      ) : null}
+      <div role={options.length > 1 ? "tabpanel" : undefined} id={`${groupId}-panel`} aria-labelledby={options.length > 1 ? `${groupId}-tab-${view}` : undefined} className="px-5 pb-5 pt-3">
+        {view === "original" && original ? (
+          <p className="whitespace-pre-wrap break-words font-mono text-[15px] leading-8 text-label">
+            <MarkedText text={original} findings={findings} />
+          </p>
+        ) : approvedLocal ? (
+          <p className="flex items-start gap-2.5 text-[15px] leading-relaxed text-label">
+            <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-allow-text" aria-hidden="true" />
+            The full text went only to the private model inside your company. It never left your network.
+          </p>
+        ) : copy.sent && result.processed_prompt ? (
+          <p className="whitespace-pre-wrap break-words font-mono text-[15px] leading-8 text-label">
+            <SealedText text={result.processed_prompt} sweep={sweep} originals={original ? originals : null} />
+          </p>
+        ) : (
+          <p className="text-[15px] leading-relaxed text-label-2">
+            {result.status === "PENDING_REVIEW" ? "Nothing yet. It waits for a person to approve it." : "Nothing. This text was not sent to any AI model."}
+          </p>
+        )}
 
-      <div className={`mt-4 grid grid-cols-1 gap-3 ${original ? "lg:grid-cols-2" : ""}`}>
-        {original ? (
-          <div className="flex min-w-0 flex-col gap-1.5">
-            <h3 className="text-[13px] font-semibold text-label-2">You wrote</h3>
-            <p className="well min-h-[88px] whitespace-pre-wrap break-words rounded-2xl px-4 py-3 font-mono text-[14px] leading-7 text-label">
-              <MarkedText text={original} findings={findings} />
-            </p>
-          </div>
-        ) : null}
-        <div className="flex min-w-0 flex-col gap-1.5">
-          <h3 className="text-[13px] font-semibold text-label-2">AI receives</h3>
-          {result.action_decision === "REVIEW" && result.status === "COMPLETED" ? (
-            <p className="flex min-h-[88px] items-center gap-2 rounded-2xl bg-allow/[0.08] px-4 py-3 text-[15px] font-medium text-label">
-              <ShieldCheck className="h-5 w-5 shrink-0 text-allow-text" aria-hidden="true" />
-              The full text went only to the private local model inside your company. It never left your network.
-            </p>
-          ) : copy.sent && result.processed_prompt ? (
-            <p className="well min-h-[88px] whitespace-pre-wrap break-words rounded-2xl px-4 py-3 font-mono text-[14px] leading-7 text-label">
-              <RedactedText text={result.processed_prompt} />
-            </p>
-          ) : (
-            <p className="flex min-h-[88px] items-center gap-2 rounded-2xl border border-dashed border-label-3/40 px-4 py-3 text-[15px] font-medium text-label-2">
-              <Ban className="h-4 w-4 shrink-0" aria-hidden="true" />
-              {result.status === "PENDING_REVIEW" ? "Nothing yet. It waits for a person to approve it." : "Nothing. This text was not sent."}
-            </p>
-          )}
-        </div>
       </div>
     </section>
   );
@@ -228,28 +309,26 @@ export function Comparison({ original, result }: { original: string | null; resu
 
 type Tab = "route" | "trace" | "vault" | "findings";
 
-export function Details({ result, runs, busy }: { result: InspectResponse; runs: TraceRun[]; busy: boolean }) {
-  const [tab, setTab] = useState<Tab>("route");
+export function Details({ result, runs }: { result: InspectResponse; runs: TraceRun[] }) {
+  const [tab, setTab] = useState<Tab>(result.route ? "route" : "trace");
   const tabs: Array<{ id: Tab; label: string; show: boolean }> = [
-    { id: "route", label: "Model choice", show: Boolean(result.route) },
-    { id: "trace", label: "Step-by-step log", show: true },
+    { id: "route", label: "Model Choice", show: Boolean(result.route) },
+    { id: "trace", label: "Log", show: true },
     { id: "vault", label: "Encryption", show: true },
-    { id: "findings", label: "Detection rules", show: true },
+    { id: "findings", label: "Rules", show: true },
   ];
   const visible = tabs.filter((t) => t.show);
   const active = visible.some((t) => t.id === tab) ? tab : visible[0].id;
 
   return (
-    <details className="glass group rounded-3xl">
-      <summary className={`flex cursor-pointer list-none items-center justify-between gap-3 rounded-3xl px-5 py-4 ${focusRing} [&::-webkit-details-marker]:hidden`}>
-        <span>
-          <span className="block text-[15px] font-semibold text-label">Technical details</span>
-          <span className="block text-sm text-label-2">For engineers and auditors: model choice, full log, encryption and rules</span>
-        </span>
-        <ChevronDown className="h-5 w-5 shrink-0 text-label-2 transition group-open:rotate-180" aria-hidden="true" />
+    <details className="surface group rounded-2xl">
+      <summary className={`flex min-h-[52px] cursor-pointer list-none items-center gap-3 rounded-2xl px-5 py-3 ${focusRing} [&::-webkit-details-marker]:hidden`}>
+        <ChevronRight className="h-4 w-4 shrink-0 text-label-2 transition-transform duration-200 group-open:rotate-90" aria-hidden="true" />
+        <span className="flex-1 text-[15px] font-semibold">Technical Details</span>
+        <span className="hidden text-[13px] text-label-2 sm:inline">Model Choice · Log · Encryption · Rules</span>
       </summary>
-      <div className="flex flex-col gap-4 px-5 pb-5">
-        <div role="tablist" aria-label="Technical details" className="well flex flex-wrap gap-0.5 self-start rounded-full p-1">
+      <div className="sep flex flex-col gap-4 border-t px-5 pb-5 pt-4">
+        <div role="tablist" aria-label="Technical details" className="fill flex flex-wrap gap-0.5 self-start rounded-[10px] p-0.5">
           {visible.map((t) => (
             <button
               key={t.id}
@@ -258,9 +337,11 @@ export function Details({ result, runs, busy }: { result: InspectResponse; runs:
               id={`tab-${t.id}`}
               aria-selected={active === t.id}
               aria-controls={`panel-${t.id}`}
+              tabIndex={active === t.id ? 0 : -1}
+              onKeyDown={(e) => tabKeys(e, visible.map((x) => x.id), active, setTab, "tab")}
               onClick={() => setTab(t.id)}
-              className={`h-8 rounded-full px-3.5 text-[13px] font-semibold transition ${focusRing} ${
-                active === t.id ? "glass-strong text-label" : "text-label-2 hover:text-label"
+              className={`h-10 rounded-[8px] px-3 text-[13px] transition sm:h-8 ${focusRing} ${
+                active === t.id ? "bg-[rgb(var(--surface))] font-semibold text-label shadow-surface ring-1 ring-[rgb(var(--label)/0.12)]" : "font-medium text-label-2 hover:text-label"
               }`}
             >
               {t.label}
@@ -269,7 +350,7 @@ export function Details({ result, runs, busy }: { result: InspectResponse; runs:
         </div>
         <div role="tabpanel" id={`panel-${active}`} aria-labelledby={`tab-${active}`}>
           {active === "route" && result.route ? <RoutingDetails route={result.route} /> : null}
-          {active === "trace" ? <TelemetryTerminal runs={runs} busy={busy} /> : null}
+          {active === "trace" ? <TelemetryTerminal runs={runs} busy={false} /> : null}
           {active === "vault" ? <VaultDetails vault={result.vault} /> : null}
           {active === "findings" ? <FindingsDetails findings={Array.isArray(result.findings) ? result.findings : []} /> : null}
         </div>
@@ -278,57 +359,29 @@ export function Details({ result, runs, busy }: { result: InspectResponse; runs:
   );
 }
 
-export { ReplyCard };
-
-export function NoResultYet() {
-  const items: Array<{ d: ActionDecision; title: string; text: string }> = [
-    { d: "ALLOW", title: "Safe", text: "Nothing private. Sent as written." },
-    { d: "REDACT", title: "Cleaned", text: "Personal details hidden, then sent." },
-    { d: "REVIEW", title: "Waiting", text: "A person approves it first." },
-    { d: "BLOCK", title: "Blocked", text: "A secret was found. Nothing sent." },
-  ];
-  return (
-    <section aria-labelledby="outcomes-heading" className="flex flex-col gap-3">
-      <h2 id="outcomes-heading" className="px-1 text-[15px] font-semibold text-label-2">
-        Your result will be one of these
-      </h2>
-      <ul className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {items.map(({ d, title, text }) => {
-          const Icon = ICON[d];
-          return (
-            <li key={d} className="glass flex flex-col gap-2 rounded-3xl p-4">
-              <span className={`flex h-9 w-9 items-center justify-center rounded-xl ${DECISION_STYLES[d].icon}`}>
-                <Icon className="h-5 w-5" aria-hidden="true" />
-              </span>
-              <span className={`text-[15px] font-semibold ${DECISION_STYLES[d].text}`}>{title}</span>
-              <span className="text-sm leading-snug text-label-2">{text}</span>
-            </li>
-          );
-        })}
-      </ul>
-    </section>
-  );
-}
-
+/** Determinate-feeling progress while the gateway works (usually well under a second). */
 export function Checking() {
-  const steps = ["Looking for secrets and passwords", "Hiding personal details", "Choosing the safest AI model"];
+  const steps = ["Looking for secrets", "Hiding personal details", "Choosing the safest model"];
   const [i, setI] = useState(0);
+  const [shown, setShown] = useState(false);
   useEffect(() => {
-    const id = window.setInterval(() => setI((n) => Math.min(n + 1, steps.length - 1)), 350);
-    return () => window.clearInterval(id);
+    const show = window.setTimeout(() => setShown(true), 250);
+    const id = window.setInterval(() => setI((n) => Math.min(n + 1, steps.length - 1)), 300);
+    return () => {
+      window.clearTimeout(show);
+      window.clearInterval(id);
+    };
   }, [steps.length]);
+  if (!shown) return null;
   return (
-    <section aria-live="polite" className="glass flex flex-col gap-3 rounded-[28px] p-6">
-      <p className="text-[17px] font-semibold">Checking your prompt…</p>
-      <ol className="flex flex-col gap-2">
-        {steps.map((s, n) => (
-          <li key={s} className={`flex items-center gap-2.5 text-[15px] ${n <= i ? "text-label" : "text-label-3"}`}>
-            <span className={`h-2 w-2 rounded-full ${n < i ? "bg-allow" : n === i ? "animate-pulse bg-tint" : "bg-label-3/40"}`} aria-hidden="true" />
-            {s}
-          </li>
-        ))}
-      </ol>
+    <section aria-live="polite" aria-label="Checking" className="surface flex flex-col gap-3 rounded-2xl p-5">
+      <div className="fill h-1 overflow-hidden rounded-full">
+        <div className="h-full rounded-full bg-accent transition-[width] duration-300" style={{ width: `${((i + 1) / steps.length) * 100}%` }} />
+      </div>
+      <p className="text-[15px] text-label">
+        {steps[i]}
+        <span className="text-label-2">…</span>
+      </p>
     </section>
   );
 }
-

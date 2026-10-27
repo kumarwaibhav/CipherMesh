@@ -4,14 +4,8 @@ import { Fragment, useEffect, useRef, useState } from "react";
 import { Check, ChevronRight, Copy } from "lucide-react";
 import type { ActionDecision, TelemetryLevel, TelemetryStep } from "@/lib/api";
 
-export interface TraceRun {
-  key: string;
-  requestId: string;
-  label: string;
-  decision: ActionDecision;
-  telemetry: TelemetryStep[];
-  graphPath: string[];
-}
+import type { TraceRun } from "@/lib/session";
+export type { TraceRun };
 
 const LEVEL_TEXT: Record<TelemetryLevel, string> = {
   info: "text-sky-300",
@@ -90,7 +84,7 @@ export function TelemetryTerminal({ runs, busy }: { runs: TraceRun[]; busy: bool
   return (
     <section
       aria-labelledby="terminal-title"
-      className="force-dark min-w-0 overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950 text-zinc-100 shadow-raised"
+      className="force-dark min-w-0 overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950 text-zinc-100"
     >
       <div className="flex items-center gap-3 border-b border-zinc-800 bg-zinc-900/90 px-3 py-2">
         <div className="flex items-center gap-1.5" aria-hidden="true">
@@ -105,7 +99,7 @@ export function TelemetryTerminal({ runs, busy }: { runs: TraceRun[]; busy: bool
           type="button"
           onClick={onCopy}
           disabled={!latest}
-          className="inline-flex items-center gap-1 rounded-md border border-zinc-700 px-2 py-1 font-mono text-[11px] text-zinc-300 hover:bg-zinc-800 hover:text-zinc-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 disabled:cursor-not-allowed disabled:opacity-40"
+          className="inline-flex min-h-[44px] items-center gap-1 rounded-md border border-zinc-700 px-3 font-mono sm:min-h-[32px] text-[11px] text-zinc-300 hover:bg-zinc-800 hover:text-zinc-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 disabled:cursor-not-allowed disabled:opacity-40"
           aria-label="Copy latest trace to clipboard"
         >
           {copyState === "copied" ? (
@@ -153,7 +147,7 @@ export function TelemetryTerminal({ runs, busy }: { runs: TraceRun[]; busy: bool
           <div className="text-zinc-400">
             <p>ciphermesh trace v2 — waiting for first request</p>
             <p className="mt-1">
-              <span className="text-red-500">$</span> <span className="inline-block h-[1.05em] w-[0.55em] translate-y-[2px] animate-blink bg-zinc-300" aria-hidden="true" />
+              <span className="text-red-300">$</span> <span className="inline-block h-[1.05em] w-[0.55em] translate-y-[2px] animate-blink bg-zinc-300" aria-hidden="true" />
             </p>
           </div>
         ) : null}
@@ -161,7 +155,7 @@ export function TelemetryTerminal({ runs, busy }: { runs: TraceRun[]; busy: bool
         {runs.map((run) => (
           <div key={run.key} className="mb-3 animate-fade-in">
             <p className="break-all text-zinc-400">
-              <span className="text-red-500">$</span> ciphermesh {run.label}{" "}
+              <span className="text-red-300">$</span> ciphermesh {run.label}{" "}
               <span className="text-zinc-300">{run.requestId}</span>
             </p>
             {run.telemetry.length === 0 ? (
@@ -185,12 +179,12 @@ export function TelemetryTerminal({ runs, busy }: { runs: TraceRun[]; busy: bool
 
         {busy ? (
           <p className="text-zinc-400">
-            <span className="text-red-500">$</span> running graph
+            <span className="text-red-300">$</span> running graph
             <span className="ml-1 inline-block h-[1.05em] w-[0.55em] translate-y-[2px] animate-blink bg-zinc-300" aria-hidden="true" />
           </p>
         ) : runs.length > 0 ? (
           <p>
-            <span className="text-red-500">$</span>{" "}
+            <span className="text-red-300">$</span>{" "}
             <span className="inline-block h-[1.05em] w-[0.55em] translate-y-[2px] animate-blink bg-zinc-300" aria-hidden="true" />
           </p>
         ) : null}

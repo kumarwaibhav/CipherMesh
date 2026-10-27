@@ -29,6 +29,19 @@ function apply(pref: ThemePreference) {
   requestAnimationFrame(() => requestAnimationFrame(() => root.classList.remove("theme-switching")));
 }
 
+/** App-wide: while the preference is Automatic, follow the operating system as it changes. */
+export function useFollowSystemTheme() {
+  useEffect(() => {
+    if (typeof window.matchMedia !== "function") return;
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const onChange = () => {
+      if (readPreference() === "system") apply("system");
+    };
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+}
+
 /** Shared theme preference; every control using it stays in sync. */
 export function useThemePreference(): [ThemePreference | null, (next: ThemePreference) => void] {
   const [pref, setPref] = useState<ThemePreference | null>(null);
@@ -39,15 +52,6 @@ export function useThemePreference(): [ThemePreference | null, (next: ThemePrefe
     window.addEventListener(THEME_EVENT, onChange);
     return () => window.removeEventListener(THEME_EVENT, onChange);
   }, []);
-
-  // Follow the operating system while the preference is "system".
-  useEffect(() => {
-    if (pref !== "system" || typeof window.matchMedia !== "function") return;
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    const onChange = () => apply("system");
-    mq.addEventListener("change", onChange);
-    return () => mq.removeEventListener("change", onChange);
-  }, [pref]);
 
   const choose = useCallback((next: ThemePreference) => {
     try {
@@ -67,13 +71,13 @@ export function useThemePreference(): [ThemePreference | null, (next: ThemePrefe
 export const THEME_OPTIONS: Array<{ value: ThemePreference; label: string; short: string; Icon: typeof Sun }> = [
   { value: "light", label: "Light appearance", short: "Light", Icon: Sun },
   { value: "dark", label: "Dark appearance", short: "Dark", Icon: Moon },
-  { value: "system", label: "Match my device", short: "Auto", Icon: Monitor },
+  { value: "system", label: "Match my device", short: "Automatic", Icon: Monitor },
 ];
 
 export function ThemeToggle({ withLabels = false, className = "" }: { withLabels?: boolean; className?: string }) {
   const [pref, choose] = useThemePreference();
   return (
-    <div role="group" aria-label="Appearance" className={`well flex items-center gap-0.5 rounded-full p-0.5 ${className}`}>
+    <div role="group" aria-label="Appearance" className={`fill flex items-center gap-0.5 rounded-[10px] p-0.5 ${className}`}>
       {THEME_OPTIONS.map(({ value, label, short, Icon }) => {
         const active = pref === value;
         return (
@@ -84,9 +88,9 @@ export function ThemeToggle({ withLabels = false, className = "" }: { withLabels
             aria-pressed={active}
             aria-label={withLabels ? undefined : label}
             title={label}
-            className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-full text-[13px] font-semibold transition ${focusRing} ${
+            className={`inline-flex h-11 items-center justify-center gap-1.5 rounded-[8px] text-[13px] transition sm:h-9 ${focusRing} ${
               withLabels ? "flex-1 px-3" : "w-9"
-            } ${active ? "glass-strong text-label" : "text-label-2 hover:text-label"}`}
+            } ${active ? "bg-[rgb(var(--surface))] font-semibold text-label shadow-surface ring-1 ring-[rgb(var(--label)/0.12)]" : "font-medium text-label-2 hover:text-label"}`}
           >
             <Icon className="h-4 w-4" aria-hidden="true" />
             {withLabels ? short : null}

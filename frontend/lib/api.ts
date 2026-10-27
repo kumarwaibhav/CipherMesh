@@ -152,15 +152,15 @@ export interface GraphResponse {
 }
 
 export const PROVIDER_OPTIONS: ReadonlyArray<{ value: TargetProvider; label: string }> = [
-  { value: "auto", label: "Best match (automatic)" },
+  { value: "auto", label: "Best Match" },
   { value: "aws-bedrock", label: "AWS Bedrock" },
   { value: "azure-ai", label: "Azure AI" },
   { value: "gcp-vertex", label: "GCP Vertex AI" },
-  { value: "local", label: "Private local model" },
+  { value: "local", label: "Private Local Model" },
 ];
 
 export function requestedProviderLabel(id: string | null | undefined): string {
-  return id && id.trim() ? providerLabel(id) : "Best match";
+  return id && id.trim() ? providerLabel(id) : "Best Match";
 }
 
 export function providerLabel(id: string | null | undefined): string {

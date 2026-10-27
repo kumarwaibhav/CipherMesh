@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /*
- * CipherMesh design tokens (legacy scales: used by the trace terminal and code blocks).
+ * Legacy colour scales, used only by the dark trace terminal and code blocks (`.force-dark`).
  *
  * Every Tailwind colour the console uses (zinc, emerald, amber, sky, red, brand) resolves to a
  * CSS variable holding an "r g b" triplet. Light mode is the default on :root; `.dark` on <html>
@@ -156,19 +156,26 @@
 }
 
 /*
- * Semantic tokens for the glass interface (Apple Human Interface colours).
- * label = primary text, label-2 = secondary, label-3 = tertiary. `tint` is the action colour.
- * Each decision has a vivid `fill` (icons, dots) and an accessible `text` shade that meets
- * WCAG AA 4.5:1 on the glass surfaces of its own theme.
+ * Semantic tokens (Apple Human Interface colours, measured for WCAG AA).
+ * Two layers, as in Apple's Liquid Glass model:
+ *   content layer    canvas + solid surfaces + hairline separators (no glass)
+ *   functional layer sidebar, toolbar, tab bar, sheets, toasts (glass only here)
+ * Accent (blue) means "action". Status colours appear only on status glyphs, words and redactions.
  */
 :root {
-  --bg: 242 242 247;
+  --canvas: 245 245 247;
+  --surface: 255 255 255;
+  --surface-2: 242 242 247;
   --label: 29 29 31;
-  --label-2: 72 72 77;
-  --label-3: 99 99 105;
-  --tint: 0 104 214;
-  --tint-hover: 0 91 191;
-  --tint-text: 0 88 176;
+  --label-2: 88 88 93;
+  --label-3: 98 98 103;
+  --separator: rgb(60 60 67 / 0.14);
+  --fill: rgb(118 118 128 / 0.12);
+  --fill-2: rgb(118 118 128 / 0.08);
+
+  --accent: 0 113 227;
+  --accent-hover: 0 98 196;
+  --accent-text: 0 94 190;
 
   --allow: 52 199 89;
   --allow-text: 23 106 46;
@@ -178,45 +185,68 @@
   --review-text: 75 72 196;
   --block: 255 59 48;
   --block-text: 176 16 26;
+  --destructive: 215 0 21;
+  --destructive-hover: 180 0 18;
 
-  --glass: 255 255 255;
-  --glass-a: 0.66;
-  --glass-strong-a: 0.84;
-  --glass-border: rgb(255 255 255 / 0.75);
-  --glass-edge: rgb(0 0 0 / 0.06);
-  --hairline: rgb(0 0 0 / 0.08);
-  --well: rgb(118 118 128 / 0.1);
-  --glass-shadow: 0 1px 1px rgb(0 0 0 / 0.04), 0 10px 30px -10px rgb(31 38 135 / 0.18);
-  --glass-highlight: inset 0 1px 0 rgb(255 255 255 / 0.85);
+  --glass: 252 252 253;
+  --glass-a: 0.78;
+  --glass-edge: rgb(255 255 255 / 0.65);
+  --glass-hairline: rgb(0 0 0 / 0.08);
+  --surface-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.06), 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px -12px rgb(0 0 0 / 0.08);
+  --lattice: rgb(0 0 0 / 0.055);
+  --glow: rgb(0 113 227 / 0.09);
+  --redaction: 29 29 31;
+  --on-redaction: 255 255 255;
 }
 
 :root.dark {
-  --bg: 0 0 0;
+  --canvas: 0 0 0;
+  --surface: 28 28 30;
+  --surface-2: 44 44 46;
   --label: 245 245 247;
-  --label-2: 199 199 204;
-  --label-3: 162 162 168;
-  --tint: 0 104 214;
-  --tint-hover: 0 91 191;
-  --tint-text: 100 170 255;
+  --label-2: 174 174 179;
+  --label-3: 160 160 165;
+  --separator: rgb(84 84 88 / 0.55);
+  --fill: rgb(118 118 128 / 0.24);
+  --fill-2: rgb(118 118 128 / 0.16);
+
+  --accent: 0 113 227;
+  --accent-hover: 0 125 250;
+  --accent-text: 92 172 255;
 
   --allow: 48 209 88;
   --allow-text: 48 209 88;
   --redact: 255 159 10;
-  --redact-text: 255 179 64;
+  --redact-text: 255 159 10;
   --review: 94 92 230;
-  --review-text: 165 163 255;
+  --review-text: 125 122 255;
   --block: 255 69 58;
-  --block-text: 255 120 112;
+  --block-text: 255 105 97;
+  --destructive: 215 0 21;
+  --destructive-hover: 235 20 40;
 
-  --glass: 30 30 34;
-  --glass-a: 0.58;
-  --glass-strong-a: 0.74;
-  --glass-border: rgb(255 255 255 / 0.12);
-  --glass-edge: rgb(0 0 0 / 0.4);
-  --hairline: rgb(255 255 255 / 0.1);
-  --well: rgb(118 118 128 / 0.24);
-  --glass-shadow: 0 1px 1px rgb(0 0 0 / 0.3), 0 16px 40px -12px rgb(0 0 0 / 0.6);
-  --glass-highlight: inset 0 1px 0 rgb(255 255 255 / 0.08);
+  --glass: 30 30 32;
+  --glass-a: 0.72;
+  --glass-edge: rgb(255 255 255 / 0.09);
+  --glass-hairline: rgb(0 0 0 / 0.5);
+  --surface-shadow: 0 0 0 0.5px rgb(255 255 255 / 0.06), 0 8px 24px -12px rgb(0 0 0 / 0.8);
+  --lattice: rgb(255 255 255 / 0.05);
+  --glow: rgb(40 110 255 / 0.16);
+  --redaction: 72 72 74;
+  --on-redaction: 245 245 247;
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --label-2: 72 72 77;
+    --separator: rgb(60 60 67 / 0.4);
+    --glass-a: 0.94;
+  }
+  :root.dark {
+    --label-2: 210 210 215;
+    --separator: rgb(140 140 145 / 0.8);
+    --glass-a: 0.94;
+  }
 }
 
 html,
@@ -226,112 +256,288 @@ body {
 }
 
 body {
-  background-color: rgb(var(--bg));
+  background-color: rgb(var(--canvas));
   color: rgb(var(--label));
+  font-size: 15px;
+  line-height: 1.47;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
-/* ---------- Wallpaper: soft colour fields the glass refracts ---------- */
-.wallpaper {
+/*
+ * Canvas: the product's own material. A faint hexagonal mesh (the logo's geometry) and one cool
+ * highlight, both fading out below the fold, so the floating glass has something to refract.
+ */
+.canvas {
   position: fixed;
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background-color: rgb(var(--bg));
-  background-image:
-    radial-gradient(42rem 34rem at 8% 6%, rgb(120 170 255 / 0.55), transparent 62%),
-    radial-gradient(38rem 30rem at 92% 12%, rgb(196 160 255 / 0.5), transparent 60%),
-    radial-gradient(44rem 36rem at 78% 92%, rgb(255 190 160 / 0.45), transparent 62%),
-    radial-gradient(36rem 30rem at 12% 88%, rgb(140 225 205 / 0.42), transparent 60%);
+  background:
+    radial-gradient(60rem 36rem at 50% -8%, var(--glow), transparent 70%),
+    rgb(var(--canvas));
 }
-:root.dark .wallpaper {
-  background-image:
-    radial-gradient(42rem 34rem at 8% 6%, rgb(40 90 220 / 0.5), transparent 62%),
-    radial-gradient(38rem 30rem at 92% 12%, rgb(120 60 210 / 0.45), transparent 60%),
-    radial-gradient(48rem 30rem at 50% 48%, rgb(50 70 170 / 0.22), transparent 65%),
-    radial-gradient(44rem 36rem at 78% 92%, rgb(200 60 90 / 0.3), transparent 62%),
-    radial-gradient(36rem 30rem at 12% 88%, rgb(20 140 130 / 0.36), transparent 60%);
+.canvas::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: var(--lattice);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 27.71 48'%3E%3Cpath d='M13.86 0 27.71 8v16l-13.85 8L0 24V8zM13.86 32v16' fill='none' stroke='%23000' stroke-width='.55'/%3E%3C/svg%3E") 0 0 / 41.6px 72px,
+    radial-gradient(70rem 40rem at 50% 0%, #000 0%, transparent 75%);
+  -webkit-mask-composite: source-in;
+  mask:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 27.71 48'%3E%3Cpath d='M13.86 0 27.71 8v16l-13.85 8L0 24V8zM13.86 32v16' fill='none' stroke='%23000' stroke-width='.55'/%3E%3C/svg%3E") 0 0 / 41.6px 72px,
+    radial-gradient(70rem 40rem at 50% 0%, #000 0%, transparent 75%);
+  mask-composite: intersect;
 }
 
-/* Components layer, so Tailwind utilities (e.g. border colours) can override the glass defaults. */
 @layer components {
-/* ---------- Glass materials (iOS: ultra-thin, regular, thick) ---------- */
-.glass,
-.glass-strong,
-.glass-thin {
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-highlight), var(--glass-shadow);
-  -webkit-backdrop-filter: blur(28px) saturate(180%);
-  backdrop-filter: blur(28px) saturate(180%);
-}
-.glass {
-  background-color: rgb(var(--glass) / var(--glass-a));
-}
-.glass-strong {
-  background-color: rgb(var(--glass) / var(--glass-strong-a));
-  -webkit-backdrop-filter: blur(40px) saturate(200%);
-  backdrop-filter: blur(40px) saturate(200%);
-}
-.glass-thin {
-  background-color: rgb(var(--glass) / 0.4);
-  box-shadow: var(--glass-highlight);
-}
-/* Without backdrop blur, fall back to near-opaque surfaces so text stays readable. */
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .glass,
-  .glass-thin {
-    background-color: rgb(var(--glass) / 0.94);
+  /* Functional layer only: sidebar, toolbar, tab bar, sheets, toasts. */
+  .glass {
+    background-color: rgb(var(--glass) / var(--glass-a));
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    backdrop-filter: blur(40px) saturate(180%);
+    box-shadow:
+      inset 0 0.5px 0 var(--glass-edge),
+      0 0 0 0.5px var(--glass-hairline);
   }
-  .glass-strong {
-    background-color: rgb(var(--glass) / 0.98);
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .glass {
+      background-color: rgb(var(--glass) / 0.97);
+    }
   }
-}
-@media (prefers-reduced-transparency: reduce) {
-  .glass,
-  .glass-thin,
-  .glass-strong {
-    background-color: rgb(var(--glass) / 0.97);
+  @media (prefers-reduced-transparency: reduce) {
+    .glass {
+      background-color: rgb(var(--glass) / 0.98);
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
+  }
+
+  /* Bars that content scrolls under carry a denser glass so their labels always read. */
+  .bar {
+    --glass-a: 0.92;
+  }
+  :root.dark .bar {
+    --glass-a: 0.9;
+  }
+  /* Very short viewports (landscape phones, 400% zoom): bars stop floating so content keeps the room. */
+  @media (max-height: 420px) {
+    header.bar,
+    .tabbar {
+      position: static;
+    }
+    .tabbar > div {
+      display: none;
+    }
+  }
+
+  /* Content layer: solid, quiet surfaces. */
+  .surface {
+    background-color: rgb(var(--surface));
+    box-shadow: var(--surface-shadow);
+  }
+  .fill {
+    background-color: var(--fill);
+  }
+  .fill-2 {
+    background-color: var(--fill-2);
+  }
+  .sep {
+    border-color: var(--separator);
+  }
+
+  /* Scroll edge: the toolbar is clear at rest and becomes glass once content slides beneath it. */
+  .scroll-edge {
+    transition:
+      background-color 200ms ease,
+      box-shadow 200ms ease;
+  }
+  .scroll-edge[data-scrolled="false"] {
+    background-color: transparent;
+    box-shadow: none;
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
 }
 
-/* Inset fields (inputs, text wells) */
-.well {
-  background-color: var(--well);
-}
-.hairline {
-  border-color: var(--hairline);
-}
-
-}
-
-/* Native <dialog> as an iOS sheet */
+/* Native <dialog> presented as a sheet */
 dialog.sheet {
   padding: 0;
   border: 0;
   background: transparent;
   color: inherit;
-  max-width: min(560px, calc(100vw - 24px));
+  max-width: min(520px, calc(100vw - 24px));
   width: 100%;
 }
 dialog.sheet::backdrop {
-  background: rgb(0 0 0 / 0.32);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
+  background: rgb(0 0 0 / 0.28);
 }
 dialog.sheet[open] {
-  animation: sheet-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation: sheet-in 260ms cubic-bezier(0.32, 0.72, 0, 1) both;
 }
 @keyframes sheet-in {
   from {
     opacity: 0;
-    transform: translateY(12px) scale(0.98);
+    transform: translateY(16px) scale(0.985);
   }
   to {
     opacity: 1;
     transform: none;
+  }
+}
+/* Phones: a bottom sheet with a grabber that can be swiped down. */
+@media (max-width: 639px) {
+  dialog.sheet {
+    margin: auto 0 0;
+    max-width: 100vw;
+    width: 100vw;
+    max-height: 92dvh;
+  }
+  dialog.sheet[open] {
+    animation: sheet-up 340ms cubic-bezier(0.32, 0.72, 0, 1) both;
+  }
+}
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+/* ---------- Signature: the redaction sweep ----------
+ * The private value is visible for a beat, a bar sweeps across exactly that value, and the bar is
+ * then labelled with what it hides. Both layers share one grid cell, so the bar keeps the width of
+ * the value it covers and nothing reflows. */
+.redaction {
+  position: relative;
+  display: inline-grid;
+  vertical-align: baseline;
+  border-radius: 5px;
+  padding: 0 0.4em;
+  margin: 0 0.08em;
+  line-height: 1.6;
+  white-space: nowrap;
+  color: rgb(var(--on-redaction));
+  background-color: rgb(var(--redaction));
+  isolation: isolate;
+}
+.redaction > .redaction-orig,
+.redaction > .redaction-label {
+  grid-area: 1 / 1;
+  text-align: center;
+}
+.redaction-orig {
+  visibility: hidden;
+  color: rgb(var(--label));
+}
+.redaction-label {
+  font-size: 0.86em;
+  font-weight: 600;
+}
+.redaction[data-sweep="true"] {
+  animation: redact-fill 900ms both;
+  animation-delay: var(--delay, 0ms);
+}
+.redaction[data-sweep="true"] > .redaction-orig {
+  animation: redact-orig 900ms both;
+  animation-delay: var(--delay, 0ms);
+}
+.redaction[data-sweep="true"] > .redaction-label {
+  animation: redact-label 900ms cubic-bezier(0.32, 0.72, 0, 1) both;
+  animation-delay: var(--delay, 0ms);
+}
+.redaction[data-sweep="true"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  background: rgb(var(--redaction));
+  transform-origin: left center;
+  pointer-events: none;
+  animation: redact-bar 900ms cubic-bezier(0.65, 0, 0.35, 1) both;
+  animation-delay: var(--delay, 0ms);
+}
+@keyframes redact-bar {
+  0%, 18% { transform: scaleX(0); opacity: 1; }
+  58% { transform: scaleX(1); opacity: 1; }
+  100% { transform: scaleX(1); opacity: 0; }
+}
+@keyframes redact-fill {
+  0%, 57% { background-color: transparent; box-shadow: inset 0 -2px 0 rgb(var(--redact)); }
+  58%, 100% { background-color: rgb(var(--redaction)); box-shadow: none; }
+}
+@keyframes redact-orig {
+  0%, 57% { visibility: visible; }
+  58%, 100% { visibility: hidden; }
+}
+@keyframes redact-label {
+  0%, 60% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* Highlight of a detected value inside the person's own text */
+mark.finding {
+  border-radius: 4px;
+  padding: 0 2px;
+  color: inherit;
+  background: transparent;
+  text-decoration-line: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+/* ---------- Logo motion ---------- */
+.mark-draw .mark-hex {
+  stroke-dasharray: 190;
+  stroke-dashoffset: 190;
+  animation: mark-hex 900ms cubic-bezier(0.65, 0, 0.35, 1) 120ms forwards;
+}
+.mark-draw .mark-node {
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(0);
+  animation: mark-pop 360ms cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+.mark-draw .mark-gate {
+  stroke-dasharray: 40;
+  stroke-dashoffset: 40;
+  animation: mark-hex 420ms cubic-bezier(0.65, 0, 0.35, 1) 980ms forwards;
+}
+.mark-draw .mark-core {
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(0);
+  animation: mark-pop 420ms cubic-bezier(0.32, 0.72, 0, 1) 820ms forwards;
+}
+@keyframes mark-hex {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes mark-pop {
+  to {
+    transform: scale(1);
+  }
+}
+.mark-busy .mark-core {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: mark-breathe 1.1s ease-in-out infinite;
+}
+@keyframes mark-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.28);
+    opacity: 0.7;
   }
 }
 
@@ -343,7 +549,7 @@ dialog.sheet[open] {
 }
 
 ::selection {
-  background: rgb(var(--tint) / 0.25);
+  background: rgb(var(--accent) / 0.22);
 }
 
 .scrollbar-thin {
@@ -351,18 +557,12 @@ dialog.sheet[open] {
   scrollbar-color: rgb(var(--label-3) / 0.5) transparent;
 }
 
-/* Highlight of a detected value inside the user's own text */
-mark.finding {
-  border-radius: 6px;
-  padding: 0 3px;
-  color: inherit;
-}
-
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;

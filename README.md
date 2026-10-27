@@ -147,13 +147,20 @@ This example follows a prompt containing an **email** and an **Aadhaar number**:
 
 ## 📸 Screenshots
 
-The interface is designed so anyone can use it without training. It follows Apple's glass design language (frosted, translucent layers in light and dark mode) and teaches itself the way Google tools do:
+The console follows Apple's Human Interface Guidelines and is designed so anyone can use it without training:
 
-- **One obvious action.** A single text box and one blue **Check prompt** button. Everything technical is folded away.
-- **Examples to click.** "A normal question", "Email and phone", "An API key"… each one runs instantly, so you learn by trying.
-- **A progress guide** (Paste → Check → See result) that moves as you go, plus a 20-second tour behind the **?** button.
-- **Answers in plain language.** Every result says what happened and what to do next, then shows *your text* next to *what the AI receives*, with each private item highlighted.
-- **Colour that means something** (Apple colour psychology): green = safe, orange = changed, purple = waiting for a person, red = stopped. The word is always shown too, so colour is never the only signal.
+- **Two layers, like iOS.** Frosted glass is used only for the floating controls (sidebar, top bar, tab bar, sheets); content sits on solid, quiet surfaces so it always reads clearly, in light and dark.
+- **One obvious action.** A single text box and one blue **Check** button. Six one-click examples ("Email and Phone", "An API Key"…) teach by doing.
+- **The signature moment.** After a check, each private value is shown for a beat, then a redaction bar sweeps across exactly that value and labels what it hides. You see your data being protected.
+- **Answers in plain language.** Every result says what happened and what to do next, with *What the AI Receives* next to *What You Wrote*.
+- **Colour that means something:** blue is the only action colour; green, orange, purple and red are kept for Safe, Cleaned, Waiting and Blocked, always with a word and an icon.
+- **Motion with meaning.** The logo draws itself once per visit and its core pulses blue while a check runs; the navigation highlight slides as you tap. Reduce Motion, Reduce Transparency and Increase Contrast are all respected.
+- **Audited.** Independent functional, accessibility (axe-core plus a pixel-level contrast sampler across about 8,000 text runs) and HIG design reviews; see [docs/DESIGN_REVIEW.md](docs/DESIGN_REVIEW.md).
+
+<p align="center">
+  <img src="docs/screenshots/redact_sweep.png" alt="The redaction sweep: the email address and phone number are underlined just before the bar covers them" width="100%">
+  <br><sub>The redaction sweep, caught mid-way: the private values are about to be covered.</sub>
+</p>
 
 ### The four results
 
@@ -176,7 +183,7 @@ The interface is designed so anyone can use it without training. It follows Appl
   </tr>
 </table>
 
-### Approvals, details and help
+### Approvals, activity and settings
 
 <table>
   <tr>
@@ -196,12 +203,20 @@ The interface is designed so anyone can use it without training. It follows Appl
     <td><img src="docs/screenshots/details_dark.png" alt="Technical details panel" width="100%"></td>
   </tr>
   <tr>
-    <td width="50%" align="center"><b>Guided tour</b>: three steps, one click to try</td>
-    <td width="50%" align="center"><b>How it works</b>: the whole system in plain words, with diagrams</td>
+    <td width="50%" align="center"><b>Activity</b>: what the gateway did, and what you checked</td>
+    <td width="50%" align="center"><b>Settings</b>: appearance and access keys in one sheet</td>
   </tr>
   <tr>
-    <td><img src="docs/screenshots/guided_tour.png" alt="Guided tour sheet" width="100%"></td>
-    <td><img src="docs/screenshots/how_it_works.png" alt="How it works page" width="100%"></td>
+    <td><img src="docs/screenshots/activity_dark.png" alt="Activity page" width="100%"></td>
+    <td><img src="docs/screenshots/settings_dark.png" alt="Settings sheet" width="100%"></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><b>Quick Tour</b>: three steps, one click to try</td>
+    <td width="50%" align="center"><b>How It Works</b>: the whole system in plain words, with diagrams</td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/guided_tour.png" alt="Quick Tour sheet" width="100%"></td>
+    <td><img src="docs/screenshots/how_it_works.png" alt="How It Works page" width="100%"></td>
   </tr>
 </table>
 
@@ -215,7 +230,7 @@ The interface is designed so anyone can use it without training. It follows Appl
   <img src="docs/screenshots/mobile_3.png" alt="Phone: blocked result in dark mode" width="230">
 </p>
 
-On phones the main sections move to an iOS-style tab bar at the bottom of the screen.
+On phones the sidebar becomes an iOS-style glass tab bar at the bottom of the screen, and sheets rise from the bottom with a grabber you can swipe down.
 
 ---
 
@@ -330,7 +345,7 @@ Open **http://localhost:3000**. The dot at the top right should be green and rea
 
 ## 🧪 Try it
 
-Open the app, tap one of the examples (or paste your own text) and press **Check prompt**. You can also call the API directly:
+Open the app, tap one of the examples (or paste your own text) and press **Check**. You can also call the API directly:
 
 ```bash
 curl -X POST https://ciphermesh-api.vercel.app/api/v1/inspect \

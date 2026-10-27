@@ -117,7 +117,7 @@ export function verdictCopy(result: InspectResponse): VerdictCopy {
         tone: "REVIEW",
         headline: "No AI model could take this",
         body: "None of the available models met the privacy rules for this text, so nothing was sent.",
-        next: "Try choosing “Best match” or the private local model.",
+        next: "Try choosing “Best Match” or the private local model.",
         sent: false,
       };
     case "PROVIDER_FAILED":
@@ -153,7 +153,7 @@ export function verdictCopy(result: InspectResponse): VerdictCopy {
       return {
         tone: "REDACT",
         headline: "Private details hidden",
-        body: `We hid ${count === 1 ? "1 item" : `${count} items`}${what ? ` (${what})` : ""}. Only the cleaned text went to ${provider}.`,
+        body: `${count === 1 ? "1 item" : `${count} items`} hidden${what ? ` (${what})` : ""}. Only the cleaned text went to ${provider}.`,
         next: "Compare your text with what the AI received below. Copy the cleaned text if you want to reuse it.",
         sent: true,
       };

@@ -27,20 +27,23 @@ const config: Config = {
           2: "rgb(var(--label-2) / <alpha-value>)",
           3: "rgb(var(--label-3) / <alpha-value>)",
         },
-        tint: {
-          DEFAULT: "rgb(var(--tint) / <alpha-value>)",
-          hover: "rgb(var(--tint-hover) / <alpha-value>)",
-          text: "rgb(var(--tint-text) / <alpha-value>)",
+        accent: {
+          DEFAULT: "rgb(var(--accent) / <alpha-value>)",
+          hover: "rgb(var(--accent-hover) / <alpha-value>)",
+          text: "rgb(var(--accent-text) / <alpha-value>)",
         },
+        canvas: "rgb(var(--canvas) / <alpha-value>)",
+        surface: { DEFAULT: "rgb(var(--surface) / <alpha-value>)", 2: "rgb(var(--surface-2) / <alpha-value>)" },
         allow: { DEFAULT: "rgb(var(--allow) / <alpha-value>)", text: "rgb(var(--allow-text) / <alpha-value>)" },
         redact: { DEFAULT: "rgb(var(--redact) / <alpha-value>)", text: "rgb(var(--redact-text) / <alpha-value>)" },
         review: { DEFAULT: "rgb(var(--review) / <alpha-value>)", text: "rgb(var(--review-text) / <alpha-value>)" },
         block: { DEFAULT: "rgb(var(--block) / <alpha-value>)", text: "rgb(var(--block-text) / <alpha-value>)" },
+        destructive: { DEFAULT: "rgb(var(--destructive) / <alpha-value>)", hover: "rgb(var(--destructive-hover) / <alpha-value>)" },
       },
       boxShadow: {
         card: "var(--shadow-card)",
         raised: "var(--shadow-raised)",
-        glass: "var(--glass-highlight), var(--glass-shadow)",
+        surface: "var(--surface-shadow)",
       },
       fontFamily: {
         sans: [
@@ -50,7 +53,6 @@ const config: Config = {
           "var(--font-sans)",
           "ui-sans-serif",
           "system-ui",
-          "-apple-system",
           "Segoe UI",
           "Roboto",
           "Helvetica Neue",
@@ -78,6 +80,10 @@ const config: Config = {
           from: { opacity: "0", transform: "translateY(2px)" },
           to: { opacity: "1", transform: "translateY(0)" },
         },
+        rise: {
+          from: { opacity: "0", transform: "translateY(8px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
       },
       borderRadius: {
         "4xl": "2rem",
@@ -85,6 +91,7 @@ const config: Config = {
       animation: {
         blink: "blink 1.1s steps(1, end) infinite",
         "fade-in": "fade-in 160ms ease-out both",
+        rise: "rise 420ms cubic-bezier(0.32, 0.72, 0, 1) both",
       },
     },
   },

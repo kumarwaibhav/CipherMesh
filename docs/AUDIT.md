@@ -78,3 +78,10 @@ Build gates passed before and after the fixes: `npm ci`, `lint`, `tsc --noEmit` 
 Usability design: one primary action per screen; clickable examples that run instantly; a progress guide; a three-step tour; plain-language results with a next step; "your text vs what the AI receives" side by side; technical detail folded away for engineers; an iOS tab bar on phones; inline sign-in on Approvals instead of a hidden settings page.
 
 The brand guidelines page was removed from the app and kept as an internal document: [`docs/brand/BRAND.md`](brand/BRAND.md).
+
+## Interface pass (v2.3): Apple HIG rebuild and independent audit
+
+- Desktop sidebar and phone tab bar (glass, sliding selection), large titles, Activity page, styled 404.
+- Redaction sweep over the real values; neutral logo core that turns blue while a check runs.
+- Fixes from independent functional, accessibility and design reviews; full list and token table in [DESIGN_REVIEW.md](DESIGN_REVIEW.md#independent-audit-round-2-v23).
+- Verified: `tsc`, `next lint`, `next build`, 161 backend tests, Playwright regression (deny focus, tab keys, badge refresh, automatic appearance, wrong key, 404), axe-core, pixel contrast.

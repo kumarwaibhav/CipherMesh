@@ -1,87 +1,17 @@
 "use client";
 
 import { useCallback, useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
-import { ArrowRight, KeyRound, Link2, Loader2, MessageCircleQuestion, ShieldCheck, Sparkles, UserRound, X } from "lucide-react";
-import { PROVIDER_OPTIONS, api, errorMessage, type InspectResponse, type TargetProvider } from "@/lib/api";
-import { PENDING_EXAMPLE_KEY, RUN_EXAMPLE_EVENT, SAMPLES, type SampleKind } from "@/lib/samples";
-import { OPEN_HELP_EVENT } from "./AppShell";
-import { Checking, Comparison, Details, NoResultYet, ReplyCard, Verdict } from "./Result";
-import type { TraceRun } from "./TelemetryTerminal";
-import { ErrorBanner, buttonPrimary, focusRing } from "./ui";
-import { POLL_INTERVAL_MS, usePolling } from "./usePolling";
+import { ArrowUp, Loader2 } from "lucide-react";
+import { PROVIDER_OPTIONS, api, errorMessage, type TargetProvider } from "@/lib/api";
+import { PENDING_EXAMPLE_KEY, RUN_EXAMPLE_EVENT, SAMPLES } from "@/lib/samples";
+import { useSession } from "@/lib/session";
+import { LargeTitle } from "./AppShell";
+import { Checking, Details, PromptDocument, Verdict } from "./Result";
+import { ReplyCard } from "./ResultPanels";
+import { ErrorBanner, STATUS, buttonPrimary, focusRing, smooth } from "./ui";
+import { verdictCopy } from "@/lib/friendly";
 
 const MAX_LEN = 65536;
-const MAX_RUNS = 20;
-const WELCOME_KEY = "cm-welcome-dismissed";
-
-const SAMPLE_ICON: Record<SampleKind, typeof Sparkles> = {
-  safe: MessageCircleQuestion,
-  personal: UserRound,
-  secret: KeyRound,
-  internal: Link2,
-};
-
-function Stepper({ step }: { step: 1 | 2 | 3 }) {
-  const steps = ["Paste", "Check", "See result"];
-  return (
-    <ol className="flex flex-wrap items-center justify-center gap-x-2 gap-y-2" aria-label="Progress">
-      {steps.map((label, i) => {
-        const n = (i + 1) as 1 | 2 | 3;
-        const done = n < step;
-        const current = n === step;
-        return (
-          <li key={label} className="flex items-center gap-2" aria-current={current ? "step" : undefined}>
-            <span
-              className={`flex h-7 items-center gap-2 rounded-full pl-1 pr-3 text-[13px] font-semibold transition ${
-                current ? "glass-strong text-label" : done ? "text-label" : "text-label-2"
-              }`}
-            >
-              <span
-                className={`flex h-5 w-5 items-center justify-center rounded-full text-[11px] font-bold ${
-                  done ? "bg-allow text-white" : current ? "bg-tint text-white" : "well text-label-2"
-                }`}
-                aria-hidden="true"
-              >
-                {done ? "✓" : n}
-              </span>
-              {label}
-              <span className="sr-only">{done ? " (done)" : current ? " (current step)" : ""}</span>
-            </span>
-            {i < steps.length - 1 ? <ArrowRight className="h-3.5 w-3.5 text-label-3" aria-hidden="true" /> : null}
-          </li>
-        );
-      })}
-    </ol>
-  );
-}
-
-function Activity() {
-  const fetchMetrics = useCallback((signal: AbortSignal) => api.metrics(signal), []);
-  const { data } = usePolling(fetchMetrics, POLL_INTERVAL_MS);
-  if (!data) return null;
-  const d = data.decisions ?? { ALLOW: 0, REDACT: 0, REVIEW: 0, BLOCK: 0 };
-  const items = [
-    { label: "checked", value: data.requests_total, dot: "" },
-    { label: "safe", value: d.ALLOW, dot: "bg-allow" },
-    { label: "cleaned", value: d.REDACT, dot: "bg-redact" },
-    { label: "waiting", value: d.REVIEW, dot: "bg-review" },
-    { label: "blocked", value: d.BLOCK, dot: "bg-block" },
-  ];
-  return (
-    <section aria-label="Activity on this server" className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 px-2 text-sm text-label-2">
-      <span className="font-semibold text-label">On this server</span>
-      {items.map((it) => (
-        <span key={it.label} className="inline-flex items-center gap-1.5">
-          {it.dot ? <span className={`h-2 w-2 rounded-full ${it.dot}`} aria-hidden="true" /> : null}
-          <span className="font-semibold tabular-nums text-label">{(it.value ?? 0).toLocaleString()}</span> {it.label}
-        </span>
-      ))}
-      <span className="inline-flex items-center gap-1.5">
-        average <span className="font-semibold tabular-nums text-label">{data.mean_latency_ms.toFixed(0)} ms</span>
-      </span>
-    </section>
-  );
-}
 
 export function Checker() {
   const promptId = useId();
@@ -89,76 +19,37 @@ export function Checker() {
   const hintId = useId();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const resultRef = useRef<HTMLDivElement>(null);
+  const { busy, setBusy, last, record, clearLast, runs } = useSession();
 
   const [prompt, setPrompt] = useState("");
   const [provider, setProvider] = useState<TargetProvider>("auto");
-  const [submitted, setSubmitted] = useState<string | null>(null);
-  const [result, setResult] = useState<InspectResponse | null>(null);
-  const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [runs, setRuns] = useState<TraceRun[]>([]);
-  const [welcome, setWelcome] = useState(false);
   const controllerRef = useRef<AbortController | null>(null);
-  const runCounter = useRef(0);
 
-  useEffect(() => {
-    try {
-      setWelcome(window.localStorage.getItem(WELCOME_KEY) !== "1");
-    } catch {
-      setWelcome(true);
-    }
-  }, []);
-
-  const dismissWelcome = () => {
-    setWelcome(false);
-    try {
-      window.localStorage.setItem(WELCOME_KEY, "1");
-    } catch {
-      /* ignore */
-    }
-  };
-
-  const run = useCallback(async (text: string, target: TargetProvider) => {
-    if (!text.trim() || text.length > MAX_LEN) return;
-    controllerRef.current?.abort();
-    const controller = new AbortController();
-    controllerRef.current = controller;
-    setBusy(true);
-    setError(null);
-    setSubmitted(text);
-    try {
-      const res = await api.inspect({ prompt: text, target_provider: target }, controller.signal);
-      if (controller.signal.aborted) return;
-      setResult(res);
-      runCounter.current += 1;
-      setRuns((prev) =>
-        [
-          ...prev,
-          {
-            key: `${res.request_id}-${runCounter.current}`,
-            requestId: res.request_id,
-            label: `inspect --target ${target}`,
-            decision: res.action_decision,
-            telemetry: Array.isArray(res.telemetry) ? res.telemetry : [],
-            graphPath: Array.isArray(res.graph_path) ? res.graph_path : [],
-          },
-        ].slice(-MAX_RUNS),
-      );
-      setWelcome(false);
+  const run = useCallback(
+    async (text: string, target: TargetProvider) => {
+      if (!text.trim() || text.length > MAX_LEN) return;
+      controllerRef.current?.abort();
+      const controller = new AbortController();
+      controllerRef.current = controller;
+      setBusy(true);
+      setError(null);
+      clearLast();
+      requestAnimationFrame(() => resultRef.current?.scrollIntoView({ behavior: smooth(), block: "nearest" }));
       try {
-        window.localStorage.setItem(WELCOME_KEY, "1");
-      } catch {
-        /* ignore */
+        const res = await api.inspect({ prompt: text, target_provider: target }, controller.signal);
+        if (controller.signal.aborted) return;
+        record(res, text, `inspect --target ${target}`);
+        requestAnimationFrame(() => resultRef.current?.scrollIntoView({ behavior: smooth(), block: "start" }));
+      } catch (err) {
+        if (controller.signal.aborted) return;
+        setError(errorMessage(err));
+      } finally {
+        if (!controller.signal.aborted) setBusy(false);
       }
-      requestAnimationFrame(() => resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
-    } catch (err) {
-      if (controller.signal.aborted) return;
-      setError(errorMessage(err));
-      setResult(null);
-    } finally {
-      if (!controller.signal.aborted) setBusy(false);
-    }
-  }, []);
+    },
+    [clearLast, record, setBusy],
+  );
 
   const runSample = useCallback(
     (id: string) => {
@@ -170,7 +61,6 @@ export function Checker() {
     [provider, run],
   );
 
-  // Examples launched from the help sheet, on this page or after navigating here.
   useEffect(() => {
     const onRun = (e: Event) => {
       const id = (e as CustomEvent<{ id?: string }>).detail?.id;
@@ -189,9 +79,14 @@ export function Checker() {
     return () => window.removeEventListener(RUN_EXAMPLE_EVENT, onRun);
   }, [runSample]);
 
+  // Coming back to this screen restores the last prompt with its result.
+  useEffect(() => {
+    if (last?.original && !prompt) setPrompt(last.original);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const tooLong = prompt.length > MAX_LEN;
   const canSubmit = !busy && prompt.trim().length > 0 && !tooLong;
-  const step: 1 | 2 | 3 = result || busy ? 3 : prompt.trim() ? 2 : 1;
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -205,62 +100,21 @@ export function Checker() {
   };
   const focusEditor = () => {
     textareaRef.current?.focus();
-    textareaRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    textareaRef.current?.scrollIntoView({ behavior: smooth(), block: "center" });
   };
   const reset = () => {
     setPrompt("");
-    setResult(null);
-    setSubmitted(null);
+    clearLast();
     setError(null);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: smooth() });
     window.setTimeout(() => textareaRef.current?.focus(), 250);
   };
 
   return (
-    <main className="mx-auto flex max-w-[1040px] flex-col gap-8 px-4 pt-10 sm:px-6 sm:pt-14">
-      <div className="flex flex-col items-center gap-4 text-center">
-        <span className="glass-thin inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[13px] font-semibold text-label-2">
-          <ShieldCheck className="h-4 w-4 text-allow-text" aria-hidden="true" />
-          Private by default · nothing leaves until it’s safe
-        </span>
-        <h1 className="max-w-3xl text-[34px] font-semibold leading-[1.1] tracking-tight text-label [text-wrap:balance] sm:text-5xl">
-          Check a prompt before it reaches AI.
-        </h1>
-        <p className="max-w-2xl text-[17px] leading-relaxed text-label-2 sm:text-lg">
-          Paste anything you’re about to send to an AI model. CipherMesh finds passwords, keys and personal details, hides
-          or stops them, and shows you exactly what the AI will see.
-        </p>
-        <Stepper step={step} />
-      </div>
+    <main className="mx-auto flex max-w-[880px] flex-col gap-5 px-4 sm:px-6">
+      <LargeTitle title="Check" subtitle="Paste what you’re about to send to an AI model. CipherMesh shows you exactly what it will receive." />
 
-      {welcome ? (
-        <aside aria-label="Getting started" className="glass flex items-start gap-4 rounded-3xl p-4 sm:items-center sm:p-5">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-tint text-white">
-            <Sparkles className="h-5 w-5" aria-hidden="true" />
-          </span>
-          <p className="min-w-0 flex-1 text-[15px] text-label">
-            <span className="font-semibold">New here?</span> Tap an example below to see CipherMesh in action, or{" "}
-            <button
-              type="button"
-              onClick={() => window.dispatchEvent(new Event(OPEN_HELP_EVENT))}
-              className={`rounded font-semibold text-tint-text underline-offset-2 hover:underline ${focusRing}`}
-            >
-              take the 20-second tour
-            </button>
-            .
-          </p>
-          <button
-            type="button"
-            onClick={dismissWelcome}
-            aria-label="Dismiss"
-            className={`well inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-label-2 hover:text-label ${focusRing}`}
-          >
-            <X className="h-4 w-4" aria-hidden="true" />
-          </button>
-        </aside>
-      ) : null}
-
-      <form onSubmit={onSubmit} className="glass-strong rounded-[32px] p-2 shadow-glass" noValidate>
+      <form onSubmit={onSubmit} className="surface rounded-2xl outline-2 outline-offset-2 outline-accent-text has-[textarea:focus]:outline" noValidate>
         <label htmlFor={promptId} className="sr-only">
           Text to check
         </label>
@@ -274,19 +128,20 @@ export function Checker() {
           spellCheck={false}
           aria-describedby={hintId}
           aria-invalid={tooLong || undefined}
-          placeholder="Paste your prompt here. For example: “Summarise this email from priya@example.com about invoice 4471…”"
-          className="block min-h-[150px] w-full resize-y rounded-[26px] bg-transparent px-5 py-4 text-[17px] leading-relaxed text-label placeholder:text-label-3 focus:outline-none focus-visible:ring-4 focus-visible:ring-tint/25"
+          placeholder="Summarize this email from priya@example.com about invoice 4471 and draft a reply."
+          className="block min-h-[148px] w-full resize-y rounded-t-2xl bg-transparent px-5 pb-2 pt-4 text-[17px] leading-relaxed text-label placeholder:text-label-3 focus:outline-none"
         />
-        <div className="flex flex-col gap-3 px-3 pb-2 pt-1 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-wrap items-center gap-2">
-            <label htmlFor={providerId} className="text-[13px] font-medium text-label-2">
+        <div className="sep flex items-center gap-3 border-t px-3 py-2.5 sm:px-4">
+          <div className="flex min-w-0 items-center gap-2">
+            <label htmlFor={providerId} className="sr-only shrink-0 whitespace-nowrap pl-1 text-[13px] text-label-2 sm:not-sr-only">
               Send to
             </label>
             <select
               id={providerId}
               value={provider}
               onChange={(e) => setProvider(e.target.value as TargetProvider)}
-              className={`well h-9 rounded-full border-0 pl-3 pr-8 text-[13px] font-semibold text-label ${focusRing}`}
+              title="Which AI model receives the text"
+              className={`fill h-11 w-full min-w-0 max-w-[150px] sm:h-9 truncate rounded-full border-0 pl-3 pr-8 text-[13px] font-semibold text-label sm:max-w-[220px] sm:rounded-[9px] ${focusRing}`}
             >
               {PROVIDER_OPTIONS.map((p) => (
                 <option key={p.value} value={p.value}>
@@ -294,57 +149,58 @@ export function Checker() {
                 </option>
               ))}
             </select>
-            <span id={hintId} className={`text-[13px] ${tooLong ? "font-semibold text-block-text" : "text-label-2"}`}>
-              {tooLong ? `Too long: ${prompt.length.toLocaleString()} of ${MAX_LEN.toLocaleString()} characters` : "Ctrl + Enter to check"}
-            </span>
           </div>
-          <button type="submit" disabled={!canSubmit} aria-busy={busy} className={`${buttonPrimary} ${focusRing} sm:min-w-[180px]`}>
-            {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <ShieldCheck className="h-4 w-4" aria-hidden="true" />}
-            {busy ? "Checking…" : "Check prompt"}
-          </button>
+          <div className="ml-auto flex shrink-0 items-center gap-3">
+            <span id={hintId} className={`text-[13px] ${tooLong ? "font-semibold text-block-text" : "hidden text-label-2 sm:inline"}`}>
+              {tooLong ? `Too long: ${prompt.length.toLocaleString()} of ${MAX_LEN.toLocaleString()} characters` : "Ctrl + Enter"}
+            </span>
+            <button type="submit" disabled={!canSubmit} aria-busy={busy} className={`${buttonPrimary} ${focusRing}`}>
+              {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <ArrowUp className="h-4 w-4" aria-hidden="true" />}
+              {busy ? "Checking…" : "Check"}
+            </button>
+          </div>
         </div>
       </form>
 
-      <section aria-labelledby="examples-heading" className="-mt-3 flex flex-col items-center gap-3">
-        <h2 id="examples-heading" className="text-[13px] font-semibold text-label-2">
-          Not sure what to paste? Try an example
-        </h2>
-        <ul className="flex flex-wrap justify-center gap-2">
-          {SAMPLES.map((s) => {
-            const Icon = SAMPLE_ICON[s.kind];
-            return (
-              <li key={s.id}>
-                <button
-                  type="button"
-                  onClick={() => runSample(s.id)}
-                  disabled={busy}
-                  title={s.hint}
-                  className={`glass inline-flex min-h-[40px] items-center gap-2 rounded-full px-4 text-sm font-semibold text-label transition hover:-translate-y-px hover:shadow-glass disabled:opacity-60 ${focusRing}`}
-                >
-                  <Icon className="h-4 w-4 text-label-2" aria-hidden="true" />
-                  {s.label}
-                </button>
-              </li>
-            );
-          })}
+      <section aria-labelledby="examples-heading" className="flex flex-col gap-2.5">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 px-1">
+          <h2 id="examples-heading" className="text-[15px] font-semibold text-label">
+            Try an Example
+          </h2>
+          <p className="text-[13px] text-label-2">Secrets are stopped · personal details are hidden · internal links wait for approval</p>
+        </div>
+        <ul className="flex flex-wrap gap-2">
+          {SAMPLES.map((s) => (
+            <li key={s.id}>
+              <button
+                type="button"
+                onClick={() => runSample(s.id)}
+                disabled={busy}
+                title={s.hint}
+                className={`surface inline-flex min-h-[44px] items-center rounded-full sm:min-h-[40px] px-4 text-[15px] font-medium text-label transition-[transform,box-shadow] duration-150 hover:-translate-y-px active:scale-[0.97] disabled:opacity-50 ${focusRing}`}
+              >
+                {s.label}
+              </button>
+            </li>
+          ))}
         </ul>
       </section>
 
-      <div ref={resultRef} className="flex scroll-mt-24 flex-col gap-4" aria-live="polite">
+      <p role="status" className="sr-only">
+        {busy ? "Checking…" : last ? `${STATUS[verdictCopy(last.result).tone].word}. ${verdictCopy(last.result).headline}` : ""}
+      </p>
+      <div ref={resultRef} className="flex scroll-mt-20 flex-col gap-4 pt-2 lg:scroll-mt-6">
         {error ? <ErrorBanner message={error} onDismiss={() => setError(null)} /> : null}
         {busy ? <Checking /> : null}
-        {!busy && result ? (
+        {!busy && last ? (
           <>
-            <Verdict result={result} onEdit={focusEditor} onReset={reset} />
-            <Comparison original={submitted} result={result} />
-            {result.response ? <ReplyCard response={result.response} /> : null}
-            <Details result={result} runs={runs} busy={busy} />
+            <Verdict result={last.result} onEdit={focusEditor} onReset={reset} />
+            <PromptDocument original={last.original} result={last.result} />
+            {last.result.response ? <ReplyCard response={last.result.response} /> : null}
+            <Details result={last.result} runs={runs} />
           </>
         ) : null}
-        {!busy && !result && !error ? <NoResultYet /> : null}
       </div>
-
-      <Activity />
     </main>
   );
 }

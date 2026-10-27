@@ -3,7 +3,7 @@ import type { Finding, ModelResponse, RouteResult, VaultInfo } from "@/lib/api";
 import { providerLabel } from "@/lib/api";
 import { categoryName, findingKind, KIND_LABEL } from "@/lib/friendly";
 import { RedactedText } from "./RedactedText";
-import { DecisionBadge, EmptyState, KeyValue, focusRing } from "./ui";
+import { EmptyState, KeyValue, StatusLabel, focusRing } from "./ui";
 
 const KIND_TEXT = { secret: "text-block-text", personal: "text-redact-text", internal: "text-review-text" } as const;
 
@@ -19,7 +19,7 @@ export function FindingsDetails({ findings }: { findings: Finding[] }) {
       <table className="w-full min-w-[560px] text-left text-sm">
         <caption className="sr-only">Detector findings</caption>
         <thead>
-          <tr className="hairline border-b text-xs text-label-2">
+          <tr className="sep border-b text-xs text-label-2">
             <th scope="col" className="py-2 pr-3 font-medium">What</th>
             <th scope="col" className="py-2 pr-3 font-medium">Type</th>
             <th scope="col" className="py-2 pr-3 font-medium">Rule</th>
@@ -32,7 +32,7 @@ export function FindingsDetails({ findings }: { findings: Finding[] }) {
           {findings.map((f, i) => {
             const kind = findingKind(f);
             return (
-              <tr key={`${f.rule}-${f.start}-${i}`} className="hairline border-b last:border-0">
+              <tr key={`${f.rule}-${f.start}-${i}`} className="sep border-b last:border-0">
                 <td className="py-2.5 pr-3 font-medium text-label">{categoryName(f.category)}</td>
                 <td className={`py-2.5 pr-3 font-semibold ${KIND_TEXT[kind]}`}>{KIND_LABEL[kind]}</td>
                 <td className="py-2.5 pr-3 font-mono text-label-2">{f.rule}</td>
@@ -55,14 +55,14 @@ function UtilityBar({ value, selected }: { value: number; selected: boolean }) {
   return (
     <div className="flex items-center gap-2">
       <div
-        className="well h-1.5 w-20 overflow-hidden rounded-full"
+        className="fill h-1.5 w-20 overflow-hidden rounded-full"
         role="meter"
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={Number(pct.toFixed(2))}
         aria-label="Score"
       >
-        <div className={`h-full rounded-full ${selected ? "bg-tint" : "bg-label-3/60"}`} style={{ width: `${pct}%` }} />
+        <div className={`h-full rounded-full ${selected ? "bg-accent" : "bg-label-3"}`} style={{ width: `${pct}%` }} />
       </div>
       <span className="font-mono text-xs text-label">{value.toFixed(1)}</span>
     </div>
@@ -102,7 +102,7 @@ export function RoutingDetails({ route }: { route: RouteResult }) {
           <table className="w-full min-w-[600px] text-left text-sm">
             <caption className="sr-only">Model comparison</caption>
             <thead>
-              <tr className="hairline border-b text-xs text-label-2">
+              <tr className="sep border-b text-xs text-label-2">
                 <th scope="col" className="py-2 pr-3 font-medium">Model</th>
                 <th scope="col" className="py-2 pr-3 font-medium">Allowed</th>
                 <th scope="col" className="py-2 pr-3 font-medium">Score</th>
@@ -114,10 +114,10 @@ export function RoutingDetails({ route }: { route: RouteResult }) {
               {evaluations.map((ev) => {
                 const selected = ev.provider_id === route.selected;
                 return (
-                  <tr key={ev.provider_id} className={`hairline border-b last:border-0 ${selected ? "bg-tint/[0.07]" : ""}`} aria-current={selected ? "true" : undefined}>
+                  <tr key={ev.provider_id} className={`sep border-b last:border-0 ${selected ? "bg-accent/[0.06]" : ""}`} aria-current={selected ? "true" : undefined}>
                     <td className="py-2.5 pr-3">
                       <span className={`text-label ${selected ? "font-semibold" : ""}`}>{providerLabel(ev.provider_id)}</span>
-                      {selected ? <span className="ml-2 rounded-full bg-tint px-2 py-0.5 text-[11px] font-semibold text-white">Chosen</span> : null}
+                      {selected ? <span className="ml-2 rounded-full bg-accent px-2 py-0.5 text-[11px] font-semibold text-white">Chosen</span> : null}
                     </td>
                     <td className="py-2.5 pr-3">
                       {ev.feasible ? (
@@ -146,7 +146,7 @@ export function RoutingDetails({ route }: { route: RouteResult }) {
         <ul className="flex flex-col gap-1">
           {route.notes.map((n, i) => (
             <li key={i} className="text-sm text-label-2">
-              <span className="font-semibold text-tint-text">Note: </span>
+              <span className="font-semibold text-accent-text">Note: </span>
               {n}
             </li>
           ))}
@@ -176,15 +176,15 @@ export function VaultDetails({ vault }: { vault: VaultInfo | null }) {
 
 export function ReplyCard({ response }: { response: ModelResponse }) {
   return (
-    <section aria-labelledby="reply-heading" className="glass rounded-3xl p-5">
+    <section aria-labelledby="reply-heading" className="surface rounded-2xl p-5">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 id="reply-heading" className="flex items-center gap-2 text-[17px] font-semibold tracking-tight">
           <MessageSquare className="h-5 w-5 text-label-2" aria-hidden="true" />
-          AI reply
+          AI Reply
         </h2>
         <span className="flex items-center gap-2 text-xs text-label-2">
           from {providerLabel(response.provider)} · reply checked
-          <DecisionBadge decision={response.decision} size="sm" />
+          <StatusLabel decision={response.decision} />
         </span>
       </div>
       <p className="mt-3 whitespace-pre-wrap break-words text-[15px] leading-relaxed text-label">
